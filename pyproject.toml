@@ -7,9 +7,8 @@ readme = "README.md"
 packages = [{include = "portal_sspk"}]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.10"
 django = "^4.1.5"
-django-dotenv = "^1.4.2"
 python-dotenv = "^0.21.0"
 
 
