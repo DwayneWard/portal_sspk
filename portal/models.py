@@ -13,9 +13,9 @@ class Tools(PolymorphicModel):
         unique=True
     )
     logo_pic = models.ImageField(
-        verbose_name='Логотип инструмента.',
+        verbose_name='Логотип инструмента',
         upload_to='control_panel/tools_logo/'
     )
     main_url = models.URLField(
-        verbose_name='URL ведущий на главную страницу инструмента.'
+        verbose_name='URL ведущий на главную страницу инструмента'
     )

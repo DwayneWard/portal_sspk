@@ -6,12 +6,12 @@ from authority.models import User
 class Category(models.Model):
 
     name = models.CharField(
-        verbose_name='Наименование категории.',
+        verbose_name='Наименование категории',
         max_length=100,
         unique=True
     )
     serial_number = models.PositiveIntegerField(
-        verbose_name='Порядковый номер категории.'
+        verbose_name='Порядковый номер категории'
     )
 
     def __str__(self):
@@ -25,12 +25,12 @@ class Category(models.Model):
 class Reports(models.Model):
 
     name = models.CharField(
-        verbose_name='Наименование отчета.',
+        verbose_name='Наименование отчета',
         max_length=100,
         unique=True
     )
     serial_number = models.PositiveIntegerField(
-        verbose_name='Порядковый номер отчета.'
+        verbose_name='Порядковый номер отчета'
     )
     zammad_queryset = models.TextField(
         verbose_name='SQL запрос к Zammad БД'

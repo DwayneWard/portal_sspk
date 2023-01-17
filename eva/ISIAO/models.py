@@ -36,9 +36,9 @@ class GIS(models.Model):
 
 class Indicator(models.Model):
 
-    CHOICES = (
-        ('Day', 'День'),
-        ('Month', 'Месяц')
+    сhoices = (
+        ('day', 'день'),
+        ('month', 'месяц')
     )
     full_name = models.TextField(
         verbose_name='Полное наименование показателя',
@@ -50,8 +50,8 @@ class Indicator(models.Model):
     )
     periodicity = models.CharField(
         verbose_name='Периодичность обновления показателя',
-        choices=CHOICES,
-        default='Day',
+        choices=сhoices,
+        default='day',
         max_length=10
     )
     zammad_queryset = models.TextField(
@@ -60,10 +60,6 @@ class Indicator(models.Model):
 
     def __str__(self):
         return self.name
-
-    def save(self, *args, **kwargs):
-        self.name = str(self.full_name).split('/')[-1]
-        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Показатель ИС ИАО'
