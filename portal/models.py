@@ -1,6 +1,8 @@
 from django.db import models
 from polymorphic.models import PolymorphicModel
 
+from portal.settings import MEDIA_ROOT
+
 
 class Tools(PolymorphicModel):
     """
@@ -13,9 +15,9 @@ class Tools(PolymorphicModel):
     )
     logo_pic = models.ImageField(
         verbose_name='Логотип инструмента.',
-        upload_to='control_panel/tools_logo/'
+        upload_to=MEDIA_ROOT + 'tools_logo/'
     )
     main_url = models.URLField(
-        verbose_name='URL ведущий на главную страницу инструмента.'
+        verbose_name='URL ведущий на главную страницу инструмента'
     )
 
