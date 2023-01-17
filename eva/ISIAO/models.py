@@ -36,7 +36,7 @@ class GIS(models.Model):
 
 class Indicator(models.Model):
 
-    сhoices = (
+    choices = (
         ('day', 'день'),
         ('month', 'месяц')
     )
@@ -50,7 +50,7 @@ class Indicator(models.Model):
     )
     periodicity = models.CharField(
         verbose_name='Периодичность обновления показателя',
-        choices=сhoices,
+        choices=choices,
         default='day',
         max_length=10
     )
@@ -59,7 +59,7 @@ class Indicator(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return self.full_name
 
     class Meta:
         verbose_name = 'Показатель ИС ИАО'
