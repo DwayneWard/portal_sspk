@@ -1,8 +1,6 @@
 from django.db import models
 from polymorphic.models import PolymorphicModel
 
-from portal.settings import MEDIA_ROOT
-
 
 class Tools(PolymorphicModel):
     """

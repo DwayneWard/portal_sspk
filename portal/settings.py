@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
 ]
 
 MY_APPS = [
@@ -94,6 +95,12 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT', 5432),
     }
 }
+
+ZAMMAD_DB_NAME = os.getenv('ZAMMAD_DB_NAME')
+ZAMMAD_DB_USER = os.getenv('ZAMMAD_DB_USER')
+ZAMMAD_DB_PASSWORD = os.getenv('PASSWORD_ZAMMAD_DB')
+ZAMMAD_DB_HOST = os.getenv('ZAMMAD_DB_HOST')
+ZAMMAD_DB_PORT = os.getenv('ZAMMAD_DB_PORT')
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
