@@ -5,6 +5,7 @@ from polymorphic.models import PolymorphicModel
 class Tools(PolymorphicModel):
     """
     Абстрактная модель для инструментов, которая обьединяет общую информацию инструментов.
+    Наследоваться от нее при создании новых инструментов.
     """
     full_name = models.CharField(
         verbose_name='Полное имя инструмента',
@@ -18,4 +19,3 @@ class Tools(PolymorphicModel):
     main_url = models.URLField(
         verbose_name='URL ведущий на главную страницу инструмента.'
     )
-
