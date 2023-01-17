@@ -16,42 +16,42 @@ class PanelTool(Tools):
 class ResultTask(models.Model):
 
     class Status(models.TextChoices):
-        success = 'SUCCESS', 'SUCCESS'
-        fail = 'FAIL', 'FAIL'
-        error = 'ERROR', 'ERROR'
+        success = 'success', 'success'
+        fail = 'fail', 'fail'
+        error = 'error', 'error'
 
     class Periodic(models.TextChoices):
-        day = 'Day', 'Day'
-        week = 'Week', 'Week'
-        month = 'Month', 'Month'
-        quarter = 'Quarter', 'Quarter'
-        half_year = 'Half-year', 'Half-year'
-        year = 'Year', 'Year'
+        day = 'day', 'day'
+        week = 'week', 'week'
+        month = 'month', 'month'
+        quarter = 'quarter', 'quarter'
+        half_year = 'half-year', 'half-year'
+        year = 'year', 'year'
 
     datetime = models.DateTimeField(
-        verbose_name='Дата и время выполнения задачи.',
+        verbose_name='Дата и время выполнения задачи',
         auto_now_add=True
     )
     periodicity = models.CharField(
         verbose_name='Периодичность выполения задачи',
-        help_text='Выберите периодичность выполения.',
+        help_text='Выберите периодичность выполения',
         max_length=10,
         choices=Periodic.choices,
         default=Periodic.day,
     )
     status = models.CharField(
-        verbose_name='Статус выполнения.',
-        help_text='Выберите статус выполнения.',
+        verbose_name='Статус выполнения',
+        help_text='Выберите статус выполнения',
         max_length=8,
         choices=Status.choices,
         default=Status.success,
     )
     full_name = models.CharField(
-        verbose_name='Название задачи.',
+        verbose_name='Название задачи',
         max_length=255
     )
     body = models.TextField(
-        verbose_name='Данные из автоматической отправки данных.',
+        verbose_name='Данные из автоматической отправки данных',
         help_text='Данные из задачи. В случае удачи requestId и datasets, иначе response.text'
     )
 
