@@ -1,3 +1,5 @@
 from django.contrib import admin
 
-# Register your models here.
+from eva.models import EvaTool
+
+admin.site.register(EvaTool)

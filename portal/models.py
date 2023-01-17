@@ -1,12 +1,11 @@
 from django.db import models
+from polymorphic.models import PolymorphicModel
 
 
-class Tools(models.Model):
-
-    '''
-        Абстрактная модель для инструментов, которая обьединяет общую информацию инструментов.
-    '''
-
+class Tools(PolymorphicModel):
+    """
+    Абстрактная модель для инструментов, которая обьединяет общую информацию инструментов.
+    """
     full_name = models.CharField(
         verbose_name='Полное имя инструмента',
         max_length=250,
@@ -20,5 +19,3 @@ class Tools(models.Model):
         verbose_name='URL ведущий на главную страницу инструмента.'
     )
 
-    class Meta:
-        abstract = True
