@@ -2,6 +2,8 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 
+from portal.models import Tools
+
 
 class User(AbstractUser):
     """
@@ -19,7 +21,10 @@ class User(AbstractUser):
         null=True,
         blank=True,
     )
-    # TODO: Добавить связь пользователь - инструменты, когда появится приложуха с инструментами
+    tools = models.ManyToManyField(to=Tools,
+                                   related_name='tools',
+                                   blank=True,
+                                   verbose_name='Инструменты', )
 
     class Meta:
         verbose_name = "Пользователь"
