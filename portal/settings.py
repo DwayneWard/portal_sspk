@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'celery'
+    'rest_framework',
+    'celery',
 ]
 
 MY_APPS = [
@@ -96,6 +97,12 @@ DATABASES = {
     }
 }
 
+ZAMMAD_DB_NAME = os.getenv('ZAMMAD_DB_NAME')
+ZAMMAD_DB_USER = os.getenv('ZAMMAD_DB_USER')
+ZAMMAD_DB_PASSWORD = os.getenv('PASSWORD_ZAMMAD_DB')
+ZAMMAD_DB_HOST = os.getenv('ZAMMAD_DB_HOST')
+ZAMMAD_DB_PORT = os.getenv('ZAMMAD_DB_PORT')
+
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
@@ -131,7 +138,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 MEDIA_URL = 'media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
