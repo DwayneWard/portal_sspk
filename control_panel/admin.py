@@ -1,3 +1,5 @@
 from django.contrib import admin
 
-# Register your models here.
+from control_panel.models import PanelTool
+
+admin.site.register(PanelTool)
