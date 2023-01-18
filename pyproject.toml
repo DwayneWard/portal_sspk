@@ -19,6 +19,7 @@ redis = "^4.4.2"
 celery = "^5.2.7"
 djangorestframework = "^3.14.0"
 psycopg2-binary = "^2.9.5"
+pandas = "^1.5.2"
 
 
 [tool.poetry.group.dev.dependencies]

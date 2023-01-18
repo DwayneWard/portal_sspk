@@ -4,7 +4,6 @@ from authority.models import User
 
 
 class Category(models.Model):
-
     name = models.CharField(
         verbose_name='Наименование категории',
         max_length=100,
@@ -23,7 +22,6 @@ class Category(models.Model):
 
 
 class Reports(models.Model):
-
     name = models.CharField(
         verbose_name='Наименование отчета',
         max_length=100,
