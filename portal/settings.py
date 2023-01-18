@@ -148,3 +148,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
 CELERY_TIMEZONE = 'Europe/Moscow'
+
+IAS_URL = os.getenv('IAS_URL', 'http://127.0.0.1')
+IAS_TOKEN = os.getenv('IAS_TOKEN', '')

@@ -1,21 +1,10 @@
-import datetime
 import psycopg2
 
 from eva.Reports.models import Reports
 from eva.utils import get_cursor_from_zammad_db
-from portal.settings import ZAMMAD_DB_NAME, ZAMMAD_DB_USER, ZAMMAD_DB_PASSWORD, ZAMMAD_DB_HOST, ZAMMAD_DB_PORT
-
-
-def get_date(month: bool = False) -> datetime:
-    """
-    Функция для получения даты. Может отдавать вчерашний день или первый день месяца. Используется для задач Celery.
-
-    :param month: Логический параметр. Если False - отдает вчерашнюю дату, если True - отдает первое число месяца.
-    """
-    if month:
-        return datetime.date.today().strftime('%Y-%m')
-    else:
-        return datetime.date.today() - datetime.timedelta(days=1)
+from portal.settings import (ZAMMAD_DB_HOST, ZAMMAD_DB_NAME,
+                             ZAMMAD_DB_PASSWORD, ZAMMAD_DB_PORT,
+                             ZAMMAD_DB_USER)
 
 
 def forming_data_for_single_report(queryset: str):

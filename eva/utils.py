@@ -1,3 +1,5 @@
+import datetime
+
 import psycopg2
 
 
@@ -26,3 +28,19 @@ def get_cursor_from_zammad_db(db: str, host: str, port: str, user: str, password
         # TODO: Заменить Exception на конкретную ошибку в ходе тестирования функциональности.
         except Exception:
             raise SyntaxError
+
+
+def get_date(month: bool = False, week: bool = False) -> str:
+    """
+    Функция для получения даты. Может отдавать вчерашний день, порядковый номер недели или первый день месяца. Используется для задач Celery.
+
+    :param month: Логический параметр. Если True - отдает первое число месяца.
+    :param week: Логический параметр. Если True - отдает какая неделя в году.
+
+    Если оба параметра month и week имеют значение False, то отдает вчерашний день.
+    """
+    if month:
+        return datetime.date.today().strftime('%Y-%m')
+    if week:
+        return f'W{datetime.date.today().isocalendar().week}'
+    return (datetime.date.today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
