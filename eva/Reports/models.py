@@ -40,7 +40,8 @@ class Reports(models.Model):
     category_id = models.ForeignKey(
         Category,
         on_delete=models.CASCADE,
-        related_name='reports'
+        related_name='reports',
+        verbose_name='Категория отчета',
     )
 
     def __str__(self):
