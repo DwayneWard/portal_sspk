@@ -91,11 +91,11 @@ def generate_data(time: str = None, periodic: str = 'day') -> dict:
                 'series': []
             }
             for system in systems:
-                data = forming_data_by_gis_for_ias(zammad_systemcode=system.zammad_systemcode,
+                data = forming_data_by_gis_for_iac(zammad_systemcode=system.zammad_systemcode,
                                                    date=get_date(),
                                                    indicator=indicator)
                 dataset['series'].append(system.generate_series(value=data, times=time))
             datasets.append(dataset)
-        data_for_ias['body']['datasets'] = datasets
+        data_for_iac['body']['datasets'] = datasets
 
-    return data_for_ias
+    return data_for_iac
