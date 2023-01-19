@@ -9,8 +9,10 @@ class Category(models.Model):
         max_length=100,
         unique=True
     )
-    serial_number = models.PositiveIntegerField(
-        verbose_name='Порядковый номер категории'
+    serial_number = models.DecimalField(
+        verbose_name='Порядковый номер категории',
+        max_digits=8,
+        decimal_places=5,
     )
 
     def __str__(self):
@@ -27,8 +29,10 @@ class Reports(models.Model):
         max_length=100,
         unique=True
     )
-    serial_number = models.PositiveIntegerField(
-        verbose_name='Порядковый номер отчета'
+    serial_number = models.DecimalField(
+        verbose_name='Порядковый номер отчета',
+        max_digits=8,
+        decimal_places=5,
     )
     zammad_queryset = models.TextField(
         verbose_name='SQL запрос к Zammad БД'
