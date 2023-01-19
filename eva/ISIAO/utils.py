@@ -1,5 +1,4 @@
 from redis import ConnectionPool, StrictRedis
-
 from eva.ISIAO.models import GIS, Indicator
 from eva.Reports.utils import get_date
 from eva.utils import get_cursor_from_zammad_db
