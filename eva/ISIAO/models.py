@@ -33,12 +33,41 @@ class GIS(models.Model):
         verbose_name = 'ГИС'
         verbose_name_plural = 'ГИСЫ'
 
+    def generate_series(self, value: int, times: str):
+        series = {
+            "dimensions": [
+                {
+                    "ref": "territory",
+                    "value": "40000000000"
+                },
+                {
+                    "ref": "System",
+                    "value": self.dashboard_code
+                }
+            ],
+            "attributes": [
+                {
+                    "ref": "unit",
+                    "value": "ед."
+                }
+            ],
+            "observation": {
+                "time": times,
+                "value": value
+            }
+        }
+        return series
+
 
 class Indicator(models.Model):
 
     choices = (
         ('day', 'день'),
-        ('month', 'месяц')
+        ('week', 'неделя'),
+        ('month', 'месяц'),
+        ('quarter', 'квартал'),
+        ('half-year', 'полгода'),
+        ('year', 'год'),
     )
     full_name = models.TextField(
         verbose_name='Полное наименование показателя',
