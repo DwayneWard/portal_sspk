@@ -59,7 +59,7 @@ def generate_data(time: str = None, periodic: str = 'day') -> dict:
     :return: Возвращает словарь с данными готовыми для отправки в ИС ИАО.
     """
 
-    data_for_iac = {
+    data_for_ias = {
         "body": {
             "action": "LOAD_SERIES",
             "datasets": [],
@@ -78,8 +78,8 @@ def generate_data(time: str = None, periodic: str = 'day') -> dict:
                 # TODO: добавить сюда функцию, которая получает данные из Zammad БД согласно SQL запросу zammad_queryset.
                 dataset['series'].append(system.generate_series(value=0, times=time))
             datasets.append(dataset)
-        data_for_iac['body']['datasets'] = datasets
-    return data_for_iac
+        data_for_ias['body']['datasets'] = datasets
+    return data_for_ias
 
 
 def forming_data_by_gis_for_ias():

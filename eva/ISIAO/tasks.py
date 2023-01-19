@@ -30,24 +30,24 @@ def check_status_task():
     return deleted_result_task
 
 
-@app.task
+@app.task(autoretry_for=(Exception,), retry_kwargs={'max_retries': 5, 'countdown': 30*60})
 def send_data_to_ias_everyday():
     try:
         redis = get_connect_with_redis()
 
         time = get_date()
-        now = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+        now = datetime.datetime.now().strftime('%Y-%m-%d')
 
-        data_for_iac = generate_data(time=time, periodic='day')
+        data_for_ias = generate_data(time=time, periodic='day')
 
         headers = {'Content-type': 'application/json',
                    'Authorization': f'Bearer {IAS_TOKEN}',
                    }
 
-        response = requests.post(IAS_URL, headers=headers, data=json.dumps(data_for_iac))
+        response = requests.post(IAS_URL, headers=headers, data=json.dumps(data_for_ias))
         text = json.loads(response.text)
         if response.status_code == 200:
-            redis.set(f'{now}_everyday', {'requestId': text['requestId'], 'datasets': data_for_iac['body']['datasets']})
+            redis.set(f'{now}_everyday', {'requestId': text['requestId'], 'datasets': data_for_ias['body']['datasets']})
             redis.expire(f'{now}_everyday', 259200)
         else:
             redis.set(f'{now}_everyday', {'error': text})
@@ -57,28 +57,27 @@ def send_data_to_ias_everyday():
         redis.set(f'{now}_everyday', {'error': ex})
         redis.expire(f'{now}_everyday', 259200)
     finally:
-        # TODO: Прописать перезапуск задачи. Указать данные для перезапуска в декораторе.
         pass
 
 
-@app.task
+@app.task(autoretry_for=(Exception,), retry_kwargs={'max_retries': 5, 'countdown': 30*60})
 def send_data_to_ias_everyweek():
     try:
         redis = get_connect_with_redis()
 
         time = get_date(week=True)
-        now = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+        now = datetime.datetime.now().strftime('%Y-%m-%d')
 
-        data_for_iac = generate_data(time=time, periodic='week')
+        data_for_ias = generate_data(time=time, periodic='week')
 
         headers = {'Content-type': 'application/json',
                    'Authorization': f'Bearer {IAS_TOKEN}',
                    }
 
-        response = requests.post(IAS_URL, headers=headers, data=json.dumps(data_for_iac))
+        response = requests.post(IAS_URL, headers=headers, data=json.dumps(data_for_ias))
         text = json.loads(response.text)
         if response.status_code == 200:
-            redis.set(f'{now}_week', {'requestId': text['requestId'], 'datasets': data_for_iac['body']['datasets']})
+            redis.set(f'{now}_week', {'requestId': text['requestId'], 'datasets': data_for_ias['body']['datasets']})
             redis.expire(f'{now}_week', 259200)
         else:
             redis.set(f'{now}_week', {'error': text})
@@ -88,17 +87,16 @@ def send_data_to_ias_everyweek():
         redis.set(f'{now}_week', {'error': ex})
         redis.expire(f'{now}_week', 259200)
     finally:
-        # TODO: Прописать перезапуск задачи. Указать данные для перезапуска в декораторе.
         pass
 
 
-@app.task
+@app.task(autoretry_for=(Exception,), retry_kwargs={'max_retries': 5, 'countdown': 30*60})
 def send_data_to_ias_periodic():
     try:
         redis = get_connect_with_redis()
 
         time = get_date(month=True)
-        now = datetime.datetime.strftime("%Y-%m-%d_%H:%M:%S")
+        now = datetime.datetime.strftime('%Y-%m-%d')
 
         headers = {'Content-type': 'application/json',
                    'Authorization': f'Bearer {IAS_TOKEN}',
@@ -137,5 +135,4 @@ def send_data_to_ias_periodic():
             redis.set(f'{now}_month', {'error': ex})
             redis.expire(f'{now}_month', 259200)
     finally:
-        # TODO: Прописать перезапуск задачи. Указать данные для перезапуска в декораторе. Прописать заполнение БД статусов.
         pass
