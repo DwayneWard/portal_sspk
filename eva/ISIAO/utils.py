@@ -80,3 +80,7 @@ def generate_data(time: str = None, periodic: str = 'day') -> dict:
     data_for_iac['body']['datasets'] = datasets
 
     return data_for_iac
+
+
+def forming_data_by_gis_for_ias():
+    pass
