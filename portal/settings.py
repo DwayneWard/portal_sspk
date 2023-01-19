@@ -48,7 +48,7 @@ MY_APPS = [
     'control_panel',
     'authority',
     'eva.ISIAO',
-    'eva.Reports'
+    'eva.Reports',
 ]
 
 INSTALLED_APPS += MY_APPS
