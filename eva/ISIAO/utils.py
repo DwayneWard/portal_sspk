@@ -1,7 +1,9 @@
 from redis import ConnectionPool, StrictRedis
-
 from eva.ISIAO.models import GIS, Indicator
-from portal.settings import CELERY_BROKER_URL
+from eva.Reports.utils import get_date
+from eva.utils import get_cursor_from_zammad_db
+from portal.settings import CELERY_BROKER_URL, ZAMMAD_DB_NAME, ZAMMAD_DB_HOST, ZAMMAD_DB_PORT, ZAMMAD_DB_USER, \
+    ZAMMAD_DB_PASSWORD
 
 
 def get_connect_with_redis():
@@ -39,15 +41,30 @@ def convert_date(date: str = None, format: str = 'month') -> tuple:
     if format == 'quarter' and date:
         for quarter in dates['quarters']:
             if month == quarter:
-                return (year+dates['quarters'][quarter], format)
+                return (year + dates['quarters'][quarter], format)
     if format == 'half_year' and date:
         for half_year in dates['half_years']:
             if month == half_year:
-                return (year+dates['half_years'][half_year], format)
+                return (year + dates['half_years'][half_year], format)
     if format == 'year' and date:
         return (year, format)
     if format == 'month' and date:
         return (date, format)
+
+
+def forming_data_by_gis_for_ias(zammad_systemcode, date, indicator: Indicator):
+    zammad_queryset = indicator.zammad_queryset.replace('###system_id###', str(zammad_systemcode)).replace('###date###',
+                                                                                                           str(date))
+    cursor = get_cursor_from_zammad_db(
+        db=ZAMMAD_DB_NAME,
+        host=ZAMMAD_DB_HOST,
+        port=ZAMMAD_DB_PORT,
+        user=ZAMMAD_DB_USER,
+        password=ZAMMAD_DB_PASSWORD,
+        queryset=zammad_queryset,
+    )
+    data = cursor.fetchall()
+    return data[0][0]
 
 
 def generate_data(time: str = None, periodic: str = 'day') -> dict:
@@ -65,22 +82,20 @@ def generate_data(time: str = None, periodic: str = 'day') -> dict:
             "datasets": [],
         }
     }
-    if time:
-        datasets = []
-        codes = Indicator.objects.filter(periodicity=periodic)
-        systems = GIS.objects.filter(dashboard_code__isnull=False).filter(zammad_systemcode__isnull=False)
-        for code in codes:
-            dataset = {
-                'indicatorCode': code.ias_code,
-                'series': []
-            }
-            for system in systems:
-                # TODO: добавить сюда функцию, которая получает данные из Zammad БД согласно SQL запросу zammad_queryset.
-                dataset['series'].append(system.generate_series(value=0, times=time))
-            datasets.append(dataset)
-        data_for_ias['body']['datasets'] = datasets
-    return data_for_ias
+    datasets = []
+    indicators = Indicator.objects.filter(periodicity=periodic)
+    systems = GIS.objects.filter(dashboard_code__isnull=False).filter(zammad_systemcode__isnull=False)
+    for indicator in indicators:
+        dataset = {
+            'indicatorCode': indicator.ias_code,
+            'series': []
+        }
+        for system in systems:
+            data = forming_data_by_gis_for_ias(zammad_systemcode=system.zammad_systemcode,
+                                               date=get_date(),
+                                               indicator=indicator)
+            dataset['series'].append(system.generate_series(value=data, times=time))
+        datasets.append(dataset)
+    data_for_iac['body']['datasets'] = datasets
 
-
-def forming_data_by_gis_for_ias():
-    pass
+    return data_for_iac
