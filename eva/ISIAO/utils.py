@@ -19,7 +19,7 @@ def convert_date(date: str = None, format: str = 'month') -> tuple:
 
     :param date: Дата полученная из функции get_date(month=True) в формате строки.
     :param format: Задает необходимый формат для возврата. Возможные значения: month (значение по умолчанию), quarter, half_year и year.
-    :return: Возвращает кортеж из даты в нужном формате и формат, если была передана дата. Возвращенный кортеж используется в generate_data.
+    :return: Возвращает кортеж из даты в нужном формате и формат, если была передана дата. Возвращенный кортеж используется в generate_data. Если в дате месяц не соответствует запрашиваемому формату, то возвращается None.
     """
 
     dates = {
@@ -46,7 +46,8 @@ def convert_date(date: str = None, format: str = 'month') -> tuple:
                 return (year+dates['half_years'][half_year], format)
     if format == 'year' and date:
         return (year, format)
-    return (date, format)
+    if format == 'month' and date:
+        return (date, format)
 
 
 def generate_data(time: str = None, periodic: str = 'day') -> dict:
@@ -64,21 +65,20 @@ def generate_data(time: str = None, periodic: str = 'day') -> dict:
             "datasets": [],
         }
     }
-
-    datasets = []
-    codes = Indicator.objects.filter(periodicity=periodic)
-    systems = GIS.objects.filter(dashboard_code__isnull=False).filter(zammad_systemcode__isnull=False)
-    for code in codes:
-        dataset = {
-            'indicatorCode': code.ias_code,
-            'series': []
-        }
-        for system in systems:
-            # TODO: добавить сюда функцию, которая получает данные из Zammad БД согласно SQL запросу zammad_queryset.
-            dataset['series'].append(system.generate_series(value=0, times=time))
-        datasets.append(dataset)
-    data_for_iac['body']['datasets'] = datasets
-
+    if time:
+        datasets = []
+        codes = Indicator.objects.filter(periodicity=periodic)
+        systems = GIS.objects.filter(dashboard_code__isnull=False).filter(zammad_systemcode__isnull=False)
+        for code in codes:
+            dataset = {
+                'indicatorCode': code.ias_code,
+                'series': []
+            }
+            for system in systems:
+                # TODO: добавить сюда функцию, которая получает данные из Zammad БД согласно SQL запросу zammad_queryset.
+                dataset['series'].append(system.generate_series(value=0, times=time))
+            datasets.append(dataset)
+        data_for_iac['body']['datasets'] = datasets
     return data_for_iac
 
 
