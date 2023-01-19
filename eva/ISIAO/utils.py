@@ -51,7 +51,7 @@ def convert_date(date: str = None, format: str = 'month') -> tuple:
     return (date, format)
 
 
-def forming_data_by_gis_for_ias(zammad_systemcode, date, indicator: Indicator):
+def forming_data_by_gis_for_iac(zammad_systemcode, date, indicator: Indicator):
     zammad_queryset = indicator.zammad_queryset.replace('###system_id###', str(zammad_systemcode)).replace('###date###',
                                                                                                            str(date))
     cursor = get_cursor_from_zammad_db(
@@ -91,8 +91,7 @@ def generate_data(time: str = None, periodic: str = 'day') -> dict:
             'series': []
         }
         for system in systems:
-            data = forming_data_by_gis_for_ias(zammad_systemcode=system.zammad_systemcode,
-                                               date=get_date(),
+            data = forming_data_by_gis_for_iac(zammad_systemcode=system.zammad_systemcode, date=get_date(),
                                                indicator=indicator)
             dataset['series'].append(system.generate_series(value=data, times=time))
         datasets.append(dataset)
