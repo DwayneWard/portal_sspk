@@ -82,20 +82,21 @@ def generate_data(time: str = None, periodic: str = 'day') -> dict:
             "datasets": [],
         }
     }
-    datasets = []
-    indicators = Indicator.objects.filter(periodicity=periodic)
-    systems = GIS.objects.filter(dashboard_code__isnull=False).filter(zammad_systemcode__isnull=False)
-    for indicator in indicators:
-        dataset = {
-            'indicatorCode': indicator.ias_code,
-            'series': []
-        }
-        for system in systems:
-            data = forming_data_by_gis_for_ias(zammad_systemcode=system.zammad_systemcode,
-                                               date=get_date(),
-                                               indicator=indicator)
-            dataset['series'].append(system.generate_series(value=data, times=time))
-        datasets.append(dataset)
-    data_for_iac['body']['datasets'] = datasets
+    if time:
+        datasets = []
+        indicators = Indicator.objects.filter(periodicity=periodic)
+        systems = GIS.objects.filter(dashboard_code__isnull=False).filter(zammad_systemcode__isnull=False)
+        for indicator in indicators:
+            dataset = {
+                'indicatorCode': indicator.ias_code,
+                'series': []
+            }
+            for system in systems:
+                data = forming_data_by_gis_for_ias(zammad_systemcode=system.zammad_systemcode,
+                                                   date=get_date(),
+                                                   indicator=indicator)
+                dataset['series'].append(system.generate_series(value=data, times=time))
+            datasets.append(dataset)
+        data_for_ias['body']['datasets'] = datasets
 
-    return data_for_iac
+    return data_for_ias
