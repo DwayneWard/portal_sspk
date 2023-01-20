@@ -5,7 +5,7 @@ import pandas
 from django.http import JsonResponse
 from redis import ConnectionPool, StrictRedis
 
-from eva.Reports.models import Reports
+from eva.reports.models import Reports
 from eva.utils import get_cursor_from_zammad_db
 from portal.settings import (CELERY_BROKER_URL, ZAMMAD_DB_HOST, ZAMMAD_DB_NAME,
                              ZAMMAD_DB_PASSWORD, ZAMMAD_DB_PORT,
