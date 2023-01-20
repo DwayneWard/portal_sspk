@@ -9,10 +9,8 @@ class Category(models.Model):
         max_length=100,
         unique=True
     )
-    serial_number = models.DecimalField(
+    serial_number = models.PositiveIntegerField(
         verbose_name='Порядковый номер категории',
-        max_digits=8,
-        decimal_places=5,
     )
 
     def __str__(self):
@@ -29,23 +27,22 @@ class Reports(models.Model):
         max_length=100,
         unique=True
     )
-    serial_number = models.DecimalField(
+    serial_number = models.FloatField(
         verbose_name='Порядковый номер отчета',
-        max_digits=8,
-        decimal_places=5,
     )
     zammad_queryset = models.TextField(
         verbose_name='SQL запрос к Zammad БД'
     )
-    user_id = models.ManyToManyField(
+    users = models.ManyToManyField(
         User,
         blank=True
     )
-    category_id = models.ForeignKey(
+    category = models.ForeignKey(
         Category,
         on_delete=models.CASCADE,
         related_name='reports',
         verbose_name='Категория отчета',
+        default=1,
     )
 
     def __str__(self):

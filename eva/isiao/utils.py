@@ -1,7 +1,7 @@
 from redis import ConnectionPool, StrictRedis
 
-from eva.ISIAO.models import GIS, Indicator
-from eva.Reports.utils import get_date
+from eva.isiao.models import GIS, Indicator
+from eva.reports.utils import get_date
 from eva.utils import get_cursor_from_zammad_db
 from portal.settings import (CELERY_BROKER_URL, ZAMMAD_DB_HOST, ZAMMAD_DB_NAME,
                              ZAMMAD_DB_PASSWORD, ZAMMAD_DB_PORT,

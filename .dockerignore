@@ -1,0 +1,6 @@
+.idea
+.gitignore
+.flake8
+.env
+.env.docker
+*.md
