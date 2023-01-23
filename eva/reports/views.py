@@ -9,7 +9,8 @@ from eva.isiao.utils import get_connect_with_redis
 from eva.reports.models import Reports
 from eva.reports.serializers import ReportsListSerializer
 from eva.reports.utils import (convert_data_to_docs_format,
-                               generate_content_type_for_download, create_report_key_in_redis_db)
+                               create_report_key_in_redis_db,
+                               generate_content_type_for_download)
 
 
 def download_report_file(requests, report_number: int, redis_db: StrictRedis, file_extension: str):

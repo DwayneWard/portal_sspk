@@ -107,15 +107,14 @@ def send_data_to_ias_periodic():
         data_half_year = generate_data(*convert_date(time, 'half_year'))
         data_year = generate_data(*convert_date(time, 'year'))
 
-        if len(data_month['body']['datasets']) != 0 or len(data_quarter['body']['datasets']) != 0 or \
-                len(data_half_year['body']['datasets']) != 0 or len(data_year['body']['datasets']) != 0:
-            datas = [
-                (data_month, 'month'),
-                (data_quarter, 'quarter'),
-                (data_half_year, 'half_year'),
-                (data_year, 'year')
-            ]
-            for data in datas:
+        datas = [
+            (data_month, 'month'),
+            (data_quarter, 'quarter'),
+            (data_half_year, 'half_year'),
+            (data_year, 'year')
+        ]
+        for data in datas:
+            if data[0]['body']['datasets'] != 0:
                 response = requests.post(IAS_URL, headers=headers, data=json.dumps(data[0]))
                 text = json.loads(response.text)
                 if response.status_code == 200:
@@ -123,16 +122,14 @@ def send_data_to_ias_periodic():
                                                    'datasets': data[0]['body']['datasets']})
                     redis.expire(f'{now}_{data[1]}', 259200)
                 else:
-                    redis.set(f'{now}_{data[1]}', {'error': text})
-                    redis.expire(f'{now}_{data[1]}', 259200)
+                    redis.set(f'{now}_{data[1]}_code', {'error': text})
+                    redis.expire(f'{now}_{data[1]}_code', 259200)
+            else:
+                redis.set(f'{now}_{data[1]}', {'error': data[0]['body']['datasets']})
+                redis.expire(f'{now}_{data[1]}', 259200)
     # TODO: Заменить Exception на конкретную ошибку в ходе тестирования функциональности.
     except Exception as ex:
-        if len(data_month['body']['datasets']) != 0 or len(data_quarter['body']['datasets']) != 0 or \
-                len(data_half_year['body']['datasets']) != 0 or len(data_year['body']['datasets']) != 0:
-            redis.set(f'{now}_month/quarter/half_year/year', {'error': ex})
-            redis.expire(f'{now}_month/quarter/half_year/year', 259200)
-        else:
-            redis.set(f'{now}_month', {'error': ex})
-            redis.expire(f'{now}_month', 259200)
+        redis.set(f'{now}_month/quarter/half_year/year', {'error': ex})
+        redis.expire(f'{now}_month/quarter/half_year/year', 259200)
     finally:
         pass
