@@ -20,6 +20,7 @@ services:
   backend:
     build: .
     container_name: 'api'
+    platform: linux/amd64
     command: >
       bash -c "python manage.py collectstatic --noinput
       && python manage.py makemigrations
@@ -43,24 +44,9 @@ services:
       - '9999:8001'
     volumes:
       - redis_data:/data
-  zammad_db_replica:
-    platform: linux/amd64
-    image: postgres:14.0-alpine
-    container_name: zammad_replica
-    environment:
-      POSTGRES_DB: "zammad"
-      POSTGRES_USER: "report"
-      POSTGRES_PASSWORD: "123456"
-    expose:
-      - '5621'
-    ports:
-      - '5621:5432'
-    volumes:
-      - zammad_replica:/var/lib/postgresql/data/
 
 volumes:
   postgres_data:
   static_value:
   media_value:
   redis_data:
-  zammad_replica:
