@@ -39,6 +39,7 @@ class ReportView(APIView):
         if data_format == 'xlsx':
             pass
         create_report_key_in_redis_db(redis_db=get_connect_with_redis(), report=report)
+        return JsonResponse({'details': 'Ключ записан в редис'})
 
 
 class ReportsListView(ListAPIView):
