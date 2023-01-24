@@ -1,10 +1,10 @@
-import datetime
 import json
 
 import pandas
 from django.http import JsonResponse
 from redis import ConnectionPool, StrictRedis
 
+from eva.isiao.utils import get_connect_with_redis
 from eva.reports.models import Reports
 from eva.utils import get_cursor_from_zammad_db
 from portal.settings import (CELERY_BROKER_URL, ZAMMAD_DB_HOST, ZAMMAD_DB_NAME,
@@ -13,19 +13,6 @@ from portal.settings import (CELERY_BROKER_URL, ZAMMAD_DB_HOST, ZAMMAD_DB_NAME,
 
 pool = ConnectionPool.from_url(CELERY_BROKER_URL)
 redis = StrictRedis(connection_pool=pool)
-
-
-def get_date(month: bool = False) -> datetime:
-    """
-    Функция для получения даты. Может отдавать вчерашний день или первый день месяца. Используется для задач Celery.
-
-    :param month: Логический параметр. Если False - отдает вчерашнюю дату, если True - отдает первое число месяца.
-    """
-
-    if month:
-        return datetime.date.today().strftime('%Y-%m')
-    else:
-        return datetime.date.today() - datetime.timedelta(days=1)
 
 
 def forming_data_for_single_report(queryset: str):
@@ -53,7 +40,7 @@ def forming_data_for_single_report(queryset: str):
                           'Обратитесь к администратору системы.'}  # TODO: Возможно не работает. Нужно проверить
 
 
-def create_report_key_in_redis_db(redis_db: StrictRedis, report: Reports, key_expire_time: int = 600) -> None:
+def create_report_key_in_redis_db(report: Reports, key_expire_time: int = 600) -> None:
     """
     Создает ключ с данными по отчету после генерации в редис с заданным временм жизни.
 
@@ -63,9 +50,9 @@ def create_report_key_in_redis_db(redis_db: StrictRedis, report: Reports, key_ex
     :return: None
     """
 
-    # TODO: Добавить проверку на то, что отчет есть в БД.
     data_from_zammad_db = forming_data_for_single_report(report.zammad_queryset)
-    redis_db.set(f"{report.serial_number}", json.dumps(data_from_zammad_db, ensure_ascii=False))
+    redis_db = get_connect_with_redis()
+    redis_db.set(f"{report.serial_number}", json.dumps(data_from_zammad_db, ensure_ascii=False, default=str))
     redis_db.expire(f"{report.serial_number}", key_expire_time)
 
 
@@ -103,3 +90,19 @@ def convert_data_to_docs_format(response, file_extension: str, redis_data: dict)
         data_for_convert.to_csv(response, sep=';', index=False)
     elif file_extension == 'xlsx':
         data_for_convert.to_excel(response, index=False, engine='xlsxwriter')
+
+
+def get_data_from_redis(report_serial_number: str) -> json:
+    """
+    Получает данные по имеющемуся в редис ключу (номеру отчета).
+
+    :param report_serial_number: Номер отчета в формате строки
+    :return: Данные из редиса при их наличии. В случае, если отчет не сгенерирован,
+    то raise ошибку для обработки в контроллере.
+    """
+    redis_db = get_connect_with_redis()
+    try:
+        data_from_redis = redis_db.get(report_serial_number)
+        return json.loads(data_from_redis)
+    except TypeError:
+        raise TypeError

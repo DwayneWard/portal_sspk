@@ -1,8 +1,8 @@
 from django.contrib import admin
 
-from eva.models import EvaTool
 from eva.isiao.models import GIS, Indicator
-from eva.reports.models import Reports, Category
+from eva.models import EvaTool
+from eva.reports.models import Category, Reports
 
 admin.site.register(EvaTool)
 admin.site.register(Reports)
