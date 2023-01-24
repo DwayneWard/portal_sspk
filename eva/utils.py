@@ -13,7 +13,8 @@ def get_cursor_from_zammad_db(db: str, host: str, port: str, user: str, password
     :param user: Имя пользователя БД
     :param password: Пароль пользователя БД
     :param queryset: SQL-запрос, который необходимо выполнить
-    :return: В случае успешного выполнения запроса возвращает курсор с данными по выполненному запросу. В случае ошибки в SQL-запроса должен делать raise SyntaxError
+    :return: В случае успешного выполнения запроса возвращает курсор с данными по выполненному запросу.
+    В случае ошибки в SQL-запроса должен делать raise SyntaxError
     """
     with psycopg2.connect(
             database=db,
@@ -32,7 +33,8 @@ def get_cursor_from_zammad_db(db: str, host: str, port: str, user: str, password
 
 def get_date(month: bool = False, week: bool = False) -> str:
     """
-    Функция для получения даты. Может отдавать вчерашний день, порядковый номер недели или первый день месяца. Используется для задач Celery.
+    Функция для получения даты. Может отдавать вчерашний день, порядковый номер недели или первый день месяца.
+    Используется для задач Celery.
 
     :param month: Логический параметр. Если True - отдает первое число месяца.
     :param week: Логический параметр. Если True - отдает какая неделя в году.
