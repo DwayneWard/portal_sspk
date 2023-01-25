@@ -23,21 +23,17 @@ def forming_data_for_single_report(queryset: str):
     :return: В случае успешного выполнения - данные из БД Zammad, в случае SyntaxError: Сообщение об ошибке.
     """
 
-    try:
-        cursor = get_cursor_from_zammad_db(
-            db=ZAMMAD_DB_NAME,
-            host=ZAMMAD_DB_HOST,
-            port=ZAMMAD_DB_PORT,
-            user=ZAMMAD_DB_USER,
-            password=ZAMMAD_DB_PASSWORD,
-            queryset=queryset,
-        )
-        columns = [column[0] for column in cursor.description]
-        results = cursor.fetchall()
-        return {'results': results, 'columns': columns}
-    except SyntaxError:
-        return {'detail': 'При формировании отчета возникла ошибка. '
-                          'Обратитесь к администратору системы.'}  # TODO: Возможно не работает. Нужно проверить
+    cursor = get_cursor_from_zammad_db(
+        db=ZAMMAD_DB_NAME,
+        host=ZAMMAD_DB_HOST,
+        port=ZAMMAD_DB_PORT,
+        user=ZAMMAD_DB_USER,
+        password=ZAMMAD_DB_PASSWORD,
+        queryset=queryset,
+    )
+    columns = [column[0] for column in cursor.description]
+    results = cursor.fetchall()
+    return {'results': results, 'columns': columns}
 
 
 def create_report_key_in_redis_db(report: Reports, key_expire_time: int = 600) -> None:
@@ -101,8 +97,5 @@ def get_data_from_redis(report_serial_number: str) -> json:
     то raise ошибку для обработки в контроллере.
     """
     redis_db = get_connect_with_redis()
-    try:
-        data_from_redis = redis_db.get(report_serial_number)
-        return json.loads(data_from_redis)
-    except TypeError:
-        raise TypeError
+    data_from_redis = redis_db.get(report_serial_number)
+    return json.loads(data_from_redis)

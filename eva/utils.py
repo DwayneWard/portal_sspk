@@ -1,5 +1,5 @@
 import datetime
-
+from psycopg2.errors import SyntaxError
 import psycopg2
 
 
@@ -22,13 +22,9 @@ def get_cursor_from_zammad_db(db: str, host: str, port: str, user: str, password
             port=port,
             user=user,
             password=password) as conn:
-        try:
-            cursor = conn.cursor()
-            cursor.execute(queryset)
-            return cursor
-        # TODO: Заменить Exception на конкретную ошибку в ходе тестирования функциональности.
-        except Exception:
-            raise SyntaxError
+        cursor = conn.cursor()
+        cursor.execute(queryset)
+        return cursor
 
 
 def get_date(month: bool = False, week: bool = False) -> str:
