@@ -30,7 +30,7 @@ def check_status_task():
     return deleted_result_task
 
 
-@app.task(bind=True, autoretry_for=(SyntaxError, ConnectionError,), retry_kwargs={'max_retries': 5, 'countdown': 30*60})
+@app.task(bind=True, autoretry_for=(SyntaxError, ConnectionError, KeyError), max_retries=5, countdown=30*60)
 def send_data_to_ias_everyday(self):
     try:
         redis = get_connect_with_redis()
@@ -55,14 +55,14 @@ def send_data_to_ias_everyday(self):
             redis.set(f'{now}_everyday_code',  json.dumps({'task_id': self.request.id,
                                                            'status': response.status_code}))
             redis.expire(f'{now}_everyday_code', 259200)
-    except (SyntaxError, ConnectionError) as ex:
-        redis.set(f'{now}_everyday',  json.dumps({'task_id': self.request.id, 'error': repr(ex)}))
-        redis.expire(f'{now}_everyday', 259200)
+    except (SyntaxError, ConnectionError, KeyError) as ex:
+        # TODO: Добавить потом отправку сообщений в телегу, что таска не отработала.
+        raise ex
     finally:
         pass
 
 
-@app.task(bind=True, autoretry_for=(SyntaxError, ConnectionError,), retry_kwargs={'max_retries': 5, 'countdown': 30*60})
+@app.task(bind=True, autoretry_for=(SyntaxError, ConnectionError, KeyError), max_retries=5, countdown=30*60)
 def send_data_to_ias_everyweek(self):
     try:
         redis = get_connect_with_redis()
@@ -87,20 +87,20 @@ def send_data_to_ias_everyweek(self):
             redis.set(f'{now}_week_code',  json.dumps({'task_id': self.request.id,
                                                   'status': response.status_code}))
             redis.expire(f'{now}_week_code', 259200)
-    except (SyntaxError, ConnectionError) as ex:
-        redis.set(f'{now}_week',  json.dumps({'task_id': self.request.id, 'error': repr(ex)}))
-        redis.expire(f'{now}_week', 259200)
+    except (SyntaxError, ConnectionError, KeyError) as ex:
+        # TODO: Добавить потом отправку сообщений в телегу, что таска не отработала.
+        raise ex
     finally:
         pass
 
 
-@app.task(bind=True, autoretry_for=(SyntaxError, ConnectionError,), retry_kwargs={'max_retries': 5, 'countdown': 30*60})
+@app.task(bind=True, autoretry_for=(SyntaxError, ConnectionError, KeyError), max_retries=5, countdown=30*60)
 def send_data_to_ias_periodic(self):
     try:
         redis = get_connect_with_redis()
 
         time = get_date(month=True)
-        now = datetime.datetime.strftime('%Y-%m-%d')
+        now = datetime.datetime.now().strftime('%Y-%m-%d')
 
         headers = {'Content-type': 'application/json',
                    'Authorization': f'Bearer {IAS_TOKEN}',
@@ -134,8 +134,8 @@ def send_data_to_ias_periodic(self):
                 redis.set(f'{now}_{data[1]}',  json.dumps({'task_id': self.request.id,
                                                            'error': data[0]['body']['datasets']}))
                 redis.expire(f'{now}_{data[1]}', 259200)
-    except (SyntaxError, ConnectionError) as ex:
-        redis.set(f'{now}_month/quarter/half_year/year',  json.dumps({'task_id': self.request.id, 'error': repr(ex)}))
-        redis.expire(f'{now}_month/quarter/half_year/year', 259200)
+    except (SyntaxError, ConnectionError, KeyError) as ex:
+        # TODO: Добавить потом отправку сообщений в телегу, что таска не отработала.
+        raise ex
     finally:
         pass
