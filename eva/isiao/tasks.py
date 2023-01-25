@@ -30,8 +30,8 @@ def check_status_task():
     return deleted_result_task
 
 
-@app.task(autoretry_for=(Exception,), retry_kwargs={'max_retries': 5, 'countdown': 30*60})
-def send_data_to_ias_everyday():
+@app.task(bind=True, autoretry_for=(SyntaxError, ConnectionError,), retry_kwargs={'max_retries': 5, 'countdown': 30*60})
+def send_data_to_ias_everyday(self):
     try:
         redis = get_connect_with_redis()
 
@@ -47,21 +47,23 @@ def send_data_to_ias_everyday():
         response = requests.post(IAS_URL, headers=headers, data=json.dumps(data_for_ias))
         text = json.loads(response.text)
         if response.status_code == 200:
-            redis.set(f'{now}_everyday', {'requestId': text['requestId'], 'datasets': data_for_ias['body']['datasets']})
+            redis.set(f'{now}_everyday',  json.dumps({'task_id': self.request.id,
+                                                      'requestId': text['requestId'],
+                                                      'datasets': data_for_ias['body']['datasets']}))
             redis.expire(f'{now}_everyday', 259200)
         else:
-            redis.set(f'{now}_everyday', {'error': text})
-            redis.expire(f'{now}_everyday', 259200)
-    # TODO: Заменить Exception на конкретную ошибку в ходе тестирования функциональности.
-    except Exception as ex:
-        redis.set(f'{now}_everyday', {'error': ex})
+            redis.set(f'{now}_everyday_code',  json.dumps({'task_id': self.request.id,
+                                                           'status': response.status_code}))
+            redis.expire(f'{now}_everyday_code', 259200)
+    except (SyntaxError, ConnectionError) as ex:
+        redis.set(f'{now}_everyday',  json.dumps({'task_id': self.request.id, 'error': repr(ex)}))
         redis.expire(f'{now}_everyday', 259200)
     finally:
         pass
 
 
-@app.task(autoretry_for=(Exception,), retry_kwargs={'max_retries': 5, 'countdown': 30*60})
-def send_data_to_ias_everyweek():
+@app.task(bind=True, autoretry_for=(SyntaxError, ConnectionError,), retry_kwargs={'max_retries': 5, 'countdown': 30*60})
+def send_data_to_ias_everyweek(self):
     try:
         redis = get_connect_with_redis()
 
@@ -77,21 +79,23 @@ def send_data_to_ias_everyweek():
         response = requests.post(IAS_URL, headers=headers, data=json.dumps(data_for_ias))
         text = json.loads(response.text)
         if response.status_code == 200:
-            redis.set(f'{now}_week', {'requestId': text['requestId'], 'datasets': data_for_ias['body']['datasets']})
+            redis.set(f'{now}_week',  json.dumps({'task_id': self.request.id,
+                                                  'requestId': text['requestId'],
+                                                  'datasets': data_for_ias['body']['datasets']}))
             redis.expire(f'{now}_week', 259200)
         else:
-            redis.set(f'{now}_week', {'error': text})
-            redis.expire(f'{now}_week', 259200)
-    # TODO: Заменить Exception на конкретную ошибку в ходе тестирования функциональности.
-    except Exception as ex:
-        redis.set(f'{now}_week', {'error': ex})
+            redis.set(f'{now}_week_code',  json.dumps({'task_id': self.request.id,
+                                                  'status': response.status_code}))
+            redis.expire(f'{now}_week_code', 259200)
+    except (SyntaxError, ConnectionError) as ex:
+        redis.set(f'{now}_week',  json.dumps({'task_id': self.request.id, 'error': repr(ex)}))
         redis.expire(f'{now}_week', 259200)
     finally:
         pass
 
 
-@app.task(autoretry_for=(Exception,), retry_kwargs={'max_retries': 5, 'countdown': 30*60})
-def send_data_to_ias_periodic():
+@app.task(bind=True, autoretry_for=(SyntaxError, ConnectionError,), retry_kwargs={'max_retries': 5, 'countdown': 30*60})
+def send_data_to_ias_periodic(self):
     try:
         redis = get_connect_with_redis()
 
@@ -118,18 +122,20 @@ def send_data_to_ias_periodic():
                 response = requests.post(IAS_URL, headers=headers, data=json.dumps(data[0]))
                 text = json.loads(response.text)
                 if response.status_code == 200:
-                    redis.set(f'{now}_{data[1]}', {'requestId': text['requestId'],
-                                                   'datasets': data[0]['body']['datasets']})
+                    redis.set(f'{now}_{data[1]}',  json.dumps({'task_id': self.request.id,
+                                                                'requestId': text['requestId'],
+                                                               'datasets': data[0]['body']['datasets']}))
                     redis.expire(f'{now}_{data[1]}', 259200)
                 else:
-                    redis.set(f'{now}_{data[1]}_code', {'error': text})
+                    redis.set(f'{now}_{data[1]}_code',  json.dumps({'task_id': self.request.id,
+                                                                    'status': response.status_code}))
                     redis.expire(f'{now}_{data[1]}_code', 259200)
             else:
-                redis.set(f'{now}_{data[1]}', {'error': data[0]['body']['datasets']})
+                redis.set(f'{now}_{data[1]}',  json.dumps({'task_id': self.request.id,
+                                                           'error': data[0]['body']['datasets']}))
                 redis.expire(f'{now}_{data[1]}', 259200)
-    # TODO: Заменить Exception на конкретную ошибку в ходе тестирования функциональности.
-    except Exception as ex:
-        redis.set(f'{now}_month/quarter/half_year/year', {'error': ex})
+    except (SyntaxError, ConnectionError) as ex:
+        redis.set(f'{now}_month/quarter/half_year/year',  json.dumps({'task_id': self.request.id, 'error': repr(ex)}))
         redis.expire(f'{now}_month/quarter/half_year/year', 259200)
     finally:
         pass
