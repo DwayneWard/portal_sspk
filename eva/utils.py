@@ -15,6 +15,7 @@ def get_cursor_from_zammad_db(db: str, host: str, port: str, user: str, password
     :param queryset: SQL-запрос, который необходимо выполнить
     :return: В случае успешного выполнения запроса возвращает курсор с данными по выполненному запросу.
     В случае ошибки в SQL-запроса должен делать raise SyntaxError
+    В случае ошибки в подключении должен делать raise ConnectionError
     """
     with psycopg2.connect(
             database=db,
@@ -26,9 +27,10 @@ def get_cursor_from_zammad_db(db: str, host: str, port: str, user: str, password
             cursor = conn.cursor()
             cursor.execute(queryset)
             return cursor
-        # TODO: Заменить Exception на конкретную ошибку в ходе тестирования функциональности.
-        except Exception:
+        except psycopg2.errors.SyntaxError:
             raise SyntaxError
+        except psycopg2.errors.OperationalError:
+            raise ConnectionError
 
 
 def get_date(month: bool = False, week: bool = False) -> str:
@@ -44,5 +46,6 @@ def get_date(month: bool = False, week: bool = False) -> str:
     if month:
         return datetime.date.today().strftime('%Y-%m')
     if week:
-        return f'W{datetime.date.today().isocalendar().week}'
+        time = datetime.date.today().isocalendar()
+        return f'{time.year}-W{time.week}'
     return (datetime.date.today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
