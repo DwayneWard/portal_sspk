@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 import os
+from datetime import timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -43,10 +44,10 @@ INSTALLED_APPS = [
 ]
 
 MY_APPS = [
+    'authority',
     'portal',
     'eva',
     'control_panel',
-    'authority',
     'eva.isiao',
     'eva.reports',
 ]
@@ -157,3 +158,12 @@ CELERY_TIMEZONE = 'Europe/Moscow'
 
 IAS_URL = os.getenv('IAS_URL', 'http://127.0.0.1')
 IAS_TOKEN = os.getenv('IAS_TOKEN', '')
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': ['rest_framework_simplejwt.authentication.JWTAuthentication'],
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=3),
+}
