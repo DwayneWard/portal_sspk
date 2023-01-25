@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from redis import ConnectionPool, StrictRedis
 from redis.exceptions import ConnectionError as DoesNotConnectRedis
 
@@ -13,12 +14,9 @@ def get_connect_with_redis():
     Осуществляет к подключение к Redis.
     """
 
-    try:
-        pool = ConnectionPool.from_url(CELERY_BROKER_URL)
-        redis = StrictRedis(connection_pool=pool)
-        return redis
-    except DoesNotConnectRedis:
-        raise DoesNotConnectRedis
+    pool = ConnectionPool.from_url(CELERY_BROKER_URL)
+    redis = StrictRedis(connection_pool=pool)
+    return redis
 
 
 def convert_date(date: str = None, format: str = 'month') -> tuple:
