@@ -6,4 +6,4 @@ from portal.models import Tools
 class ToolsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tools
-        exclude = ('id', 'polymorphic_ctype',)
+        fields = ('full_name', 'logo_pic', 'main_url')

@@ -1,12 +1,13 @@
-from psycopg2.errors import SyntaxError as SQLSyntaxError
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, JsonResponse
+from psycopg2.errors import SyntaxError as SQLSyntaxError
 from redis.exceptions import ConnectionError as DoesNotConnectRedis
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import GenericAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
 from eva.reports.models import Reports
-from eva.reports.serializers import ReportsListSerializer
+from eva.reports.serializers import ReportsSerializer
 from eva.reports.utils import (convert_data_to_docs_format,
                                create_report_key_in_redis_db,
                                generate_content_type_for_download,
@@ -53,6 +54,16 @@ class ReportAtJsonFormatView(APIView):
             return JsonResponse({'details': 'Ключ в редис не найден'}, status=404)
 
 
-class ReportsListView(ListAPIView):
-    queryset = Reports.objects.all()
-    serializer_class = ReportsListSerializer
+class CategoriesWithReportsView(GenericAPIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def get(self, request, *args, **kwargs):
+        current_user = request.user
+
+        reports = Reports.objects.filter(users=current_user).prefetch_related('category')
+
+        data = {}
+        for report in reports:
+            data.setdefault(report.category.name, []).append(ReportsSerializer(report).data)
+
+        return JsonResponse(data, status=200)

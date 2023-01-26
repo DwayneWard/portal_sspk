@@ -1,6 +1,4 @@
-from django.http import JsonResponse
 from redis import ConnectionPool, StrictRedis
-from redis.exceptions import ConnectionError as DoesNotConnectRedis
 
 from eva.isiao.models import GIS, Indicator
 from eva.utils import get_cursor_from_zammad_db, get_date
