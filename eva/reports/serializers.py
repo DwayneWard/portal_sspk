@@ -12,13 +12,7 @@ class CategorySerializer(serializers.ModelSerializer):
                   ]
 
 
-class ReportsListSerializer(serializers.ModelSerializer):
-    category = CategorySerializer()
-
+class ReportsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reports
-        fields = ['id',
-                  'serial_number',
-                  'users',
-                  'category',
-                  ]
+        fields = ('serial_number', 'name')

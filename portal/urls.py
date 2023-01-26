@@ -20,7 +20,7 @@ from portal import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/apps/', views.ToolsForCurrentUser.as_view()),
-    path('api/eva/', include('eva.urls')),
-    path('api/auth/', include('authority.urls')),
+    path('apps/', views.ToolsForCurrentUser.as_view()),
+    path('eva/', include('eva.urls')),
+    path('auth/', include('authority.urls')),
 ]
