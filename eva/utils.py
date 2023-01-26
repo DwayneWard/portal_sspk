@@ -1,5 +1,5 @@
 import datetime
-from psycopg2.errors import SyntaxError
+
 import psycopg2
 
 

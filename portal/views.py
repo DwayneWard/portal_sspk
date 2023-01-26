@@ -1,8 +1,7 @@
-from django.http import JsonResponse, HttpResponse
-from rest_framework.generics import GenericAPIView, ListAPIView
+from django.http import JsonResponse
+from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 
-from portal.models import Tools
 from portal.serializers import ToolsSerializer
 
 

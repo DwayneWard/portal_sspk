@@ -1,15 +1,12 @@
-from _ast import Is
-
-from django.db.models import Q
-from psycopg2.errors import SyntaxError as SQLSyntaxError
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, JsonResponse
+from psycopg2.errors import SyntaxError as SQLSyntaxError
 from redis.exceptions import ConnectionError as DoesNotConnectRedis
-from rest_framework.generics import ListAPIView, GenericAPIView
+from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
-from eva.reports.models import Reports, Category
+from eva.reports.models import Reports
 from eva.reports.serializers import ReportsSerializer
 from eva.reports.utils import (convert_data_to_docs_format,
                                create_report_key_in_redis_db,
