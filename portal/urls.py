@@ -16,7 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
+from portal import views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('eva/', include('eva.urls')),
+    path('api/apps/', views.ToolsForCurrentUser.as_view()),
+    path('api/eva/', include('eva.urls')),
+    path('api/auth/', include('authority.urls')),
 ]
