@@ -19,3 +19,10 @@ class Tools(PolymorphicModel):
     main_url = models.URLField(
         verbose_name='URL ведущий на главную страницу инструмента'
     )
+
+    class Meta:
+        verbose_name = "Инструмент Портала"
+        verbose_name_plural = "Инструменты Портала"
+
+    def __str__(self):
+        return self.full_name

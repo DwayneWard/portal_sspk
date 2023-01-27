@@ -25,6 +25,7 @@ whitenoise = "^6.3.0"
 xlsxwriter = "^3.0.7"
 djangorestframework-simplejwt = "^5.2.2"
 django-rest-polymorphic = "^0.1.10"
+drf-spectacular = "^0.25.1"
 
 
 [tool.poetry.group.dev.dependencies]
