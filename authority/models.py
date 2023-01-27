@@ -5,10 +5,33 @@ from phonenumber_field.modelfields import PhoneNumberField
 from portal.models import Tools
 
 
+class UserRoles:
+    USER = "user"
+    ADMIN = "admin"
+    MODERATOR = "moderator"
+    ADMIN_EVA = "admin_EVA"
+
+    choices = (
+        (USER, 'Пользователи'),
+        (ADMIN, 'Администратор'),
+        (MODERATOR, 'Модератор'),
+        (ADMIN_EVA, 'Администратор ЕВА'),
+    )
+
+
 class User(AbstractUser):
     """
     Модель пользователя. Заменяет стандартного пользователя Django
     """
+
+    role = models.CharField(
+        max_length=20,
+        choices=UserRoles.choices,
+        default=UserRoles.USER,
+        verbose_name="Роль пользователя",
+        help_text="Выберите роль пользователя",
+    )
+
     phone_number = PhoneNumberField(
         verbose_name='Рабочий телефон',
         help_text="Введите рабочий телефон сотрудника",
@@ -25,6 +48,9 @@ class User(AbstractUser):
                                    related_name='tools',
                                    blank=True,
                                    verbose_name='Инструменты', )
+
+    def __str__(self):
+        return self.username
 
     class Meta:
         verbose_name = "Пользователь"
