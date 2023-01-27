@@ -22,8 +22,10 @@ def convert_date(date: str = None, format: str = 'month') -> tuple:
     Функция для конвертации даты в формат необходимый для ИС ИАО. Возвращает кортеж из даты в нужном формате и формат.
 
     :param date: Дата полученная из функции get_date(month=True) в формате строки.
-    :param format: Задает необходимый формат для возврата. Возможные значения: month (значение по умолчанию), quarter, half_year и year.
-    :return: Возвращает кортеж из даты в нужном формате и формат, если была, если дата соотвествовала формату, иначе (None, format).
+    :param format: Задает необходимый формат для возврата. Возможные значения: month (значение по умолчанию), quarter,
+    half_year и year.
+    :return: Возвращает кортеж из даты в нужном формате и формат, если была, если дата соотвествовала формату, иначе
+    (None, format).
     Возвращенный кортеж используется в generate_data.
     """
 
@@ -54,7 +56,7 @@ def convert_date(date: str = None, format: str = 'month') -> tuple:
         if month == dates['year']:
             return (year, format)
     if format == 'month' and date:
-        return (date, format)
+        return (f'{year}-{month}', format)
     return (None, format)
 
 
@@ -65,18 +67,19 @@ def forming_data_by_gis_for_iac(zammad_systemcode, date, indicator: Indicator):
     :param zammad_systemcode: Код системы в БД Zammad, который берется из ГИСА -> поле zammad_systemcode.
     :param date: Получаем время в формате строки из функции get_date за вчерашний день.
     :param indicator: Показатель ИС ИАО с соотвествующей периодичностью
-    :return: В случае успешного выполнения - данные из БД Zammad, в случае SyntaxError/ConnectionError: Сообщение об ошибке.
+    :return: В случае успешного выполнения - данные из БД Zammad, в случае SyntaxError/ConnectionError:
+    Сообщение об ошибке.
     """
     zammad_queryset = indicator.zammad_queryset.replace('###system_id###', str(zammad_systemcode)).replace('###date###',
                                                                                                            str(date))
     try:
         cursor = get_cursor_from_zammad_db(
-        db=ZAMMAD_DB_NAME,
-        host=ZAMMAD_DB_HOST,
-        port=ZAMMAD_DB_PORT,
-        user=ZAMMAD_DB_USER,
-        password=ZAMMAD_DB_PASSWORD,
-        queryset=zammad_queryset,
+            db=ZAMMAD_DB_NAME,
+            host=ZAMMAD_DB_HOST,
+            port=ZAMMAD_DB_PORT,
+            user=ZAMMAD_DB_USER,
+            password=ZAMMAD_DB_PASSWORD,
+            queryset=zammad_queryset,
         )
         data = cursor.fetchall()
         return data[0][0]
@@ -85,9 +88,11 @@ def forming_data_by_gis_for_iac(zammad_systemcode, date, indicator: Indicator):
     except ConnectionError:
         raise ConnectionError('При подключении к БД Zammad возникла ошибка.')
 
+
 def generate_data(time: str = None, periodic: str = 'day') -> dict:
     """
     Функция для генерации данных для отправки в ИС ИАО. Возвращает словарь.
+
 
     :param time: Дата полученная из функции convert_date в формате строки. Это дата за которую отправляются данные,
     она может быть день/неделя/месяц/квартал/полугодие/год.
