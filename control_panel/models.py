@@ -15,22 +15,16 @@ class PanelTool(Tools):
 
 class ResultTask(models.Model):
 
-    class Status(models.TextChoices):
-        success = 'success', 'success'
-        fail = 'fail', 'fail'
-        error = 'error', 'error'
-
     class Periodic(models.TextChoices):
-        day = 'day', 'day'
-        week = 'week', 'week'
-        month = 'month', 'month'
-        quarter = 'quarter', 'quarter'
-        half_year = 'half-year', 'half-year'
-        year = 'year', 'year'
+        day = 'day', 'день'
+        week = 'week', 'неделя'
+        month = 'month', 'месяц'
+        quarter = 'quarter', 'квартал'
+        half_year = 'half-year', 'полгода'
+        year = 'year', 'год'
 
-    datetime = models.DateTimeField(
-        verbose_name='Дата и время выполнения задачи',
-        auto_now_add=True
+    date = models.DateField(
+        verbose_name='Дата выполнения задачи',
     )
     periodicity = models.CharField(
         verbose_name='Периодичность выполения задачи',
@@ -39,12 +33,9 @@ class ResultTask(models.Model):
         choices=Periodic.choices,
         default=Periodic.day,
     )
-    status = models.CharField(
+    status = models.PositiveIntegerField(
         verbose_name='Статус выполнения',
-        help_text='Выберите статус выполнения',
-        max_length=8,
-        choices=Status.choices,
-        default=Status.success,
+        help_text='Введите статус выполнения согласно HTTP STATUS_CODE',
     )
     full_name = models.CharField(
         verbose_name='Название задачи',
@@ -56,8 +47,11 @@ class ResultTask(models.Model):
     )
 
     def __str__(self):
-        return f'{self.datetime} - {self.periodicity} - {self.status}'
+        return f'{self.date} - {self.periodicity} - {self.status}'
 
     class Meta:
         verbose_name = 'Результат выполнения отправки данных в ИС ИАО'
         verbose_name_plural = 'Результаты выполнения отправки данных в ИС ИАО'
+        constraints = [
+            models.UniqueConstraint(fields=['date', 'periodicity'], name='date and periodicity'),
+        ]
