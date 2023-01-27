@@ -5,7 +5,8 @@ import requests
 from redis.exceptions import ConnectionError as DoesNotConnectRedis
 
 from control_panel.models import ResultTask
-from eva.isiao.utils import convert_date, generate_data, get_connect_with_redis
+from eva.isiao.utils import (convert_date, generate_data,
+                             get_connect_with_redis, get_name_task_to_db)
 from eva.utils import get_date
 from portal.settings import IAS_TOKEN, IAS_URL
 
@@ -58,11 +59,15 @@ def send_data_to_ias_everyday(self):
             redis.set(f'{now}_everyday',  json.dumps({'task_id': self.request.id,
                                                       'status': response.status_code}))
             redis.expire(f'{now}_everyday', 259200)
-        result_task, created = ResultTask.objects.update_or_create(date=now, periodicity='day',
-                                                                   status=response.status_code,
-                                                                   full_name='Ежедневная выгрузка показателей.',
-                                                                   body=data_for_ias['body']['datasets'])
+        result_task, created = ResultTask.objects.update_or_create(
+            date=now, periodicity='day', status=response.status_code,
+            full_name=f'{get_name_task_to_db("day")} выгрузка показателей.', body=data_for_ias['body']['datasets']
+        )
     except (SyntaxError, ConnectionError, KeyError) as ex:
+        now = datetime.date.today().strftime('%Y-%m-%d')
+        result_task, created = ResultTask.objects.update_or_create(
+            date=now, periodicity='day', status=418, full_name=f'{get_name_task_to_db("day")} выгрузка показателей.',
+        )
         # TODO: Добавить потом отправку сообщений в телегу, что таска не отработала.
         raise ex
     except DoesNotConnectRedis as ex:
@@ -95,11 +100,16 @@ def send_data_to_ias_everyweek(self):
             redis.set(f'{now}_week',  json.dumps({'task_id': self.request.id,
                                                   'status': response.status_code}))
             redis.expire(f'{now}_week', 259200)
-        result_task, created = ResultTask.objects.update_or_create(date=now, periodicity='week',
-                                                                   status=response.status_code,
-                                                                   full_name='Еженедельная выгрузка показателей.',
-                                                                   body=data_for_ias['body']['datasets'])
+        result_task, created = ResultTask.objects.update_or_create(
+            date=now, periodicity='week', status=response.status_code,
+            full_name=f'{get_name_task_to_db("week")} выгрузка показателей.', body=data_for_ias['body']['datasets']
+        )
     except (SyntaxError, ConnectionError, KeyError) as ex:
+        now = datetime.date.today().strftime('%Y-%m-%d')
+        result_task, created = ResultTask.objects.update_or_create(
+            date=now, periodicity='week', status=418,
+            full_name=f'{get_name_task_to_db("week")} выгрузка показателей.',
+        )
         # TODO: Добавить потом отправку сообщений в телегу, что таска не отработала.
         raise ex
     except DoesNotConnectRedis as ex:
@@ -143,12 +153,21 @@ def send_data_to_ias_periodic(self):
                     redis.set(f'{now}_{data[1]}',  json.dumps({'task_id': self.request.id,
                                                                'status': response.status_code}))
                     redis.expire(f'{now}_{data[1]}', 259200)
-                result_task, created = ResultTask.objects.update_or_create(date=now, periodicity=data[1],
-                                                                           status=response.status_code,
-                                                                           full_name='Еженедельная выгрузка показателей.',
-                                                                           body=data[0]['body']['datasets'])
+                result_task, created = ResultTask.objects.update_or_create(
+                    date=now, periodicity=data[1], status=response.status_code,
+                    full_name=f'{get_name_task_to_db(data[1])} выгрузка показателей.', body=data[0]['body']['datasets']
+                )
     except (SyntaxError, ConnectionError, KeyError) as ex:
         # TODO: Добавить потом отправку сообщений в телегу, что таска не отработала.
+        now = datetime.date.today()
+        periodics = ['month', 'quarter', 'half_year', 'year']
+        for periodic in periodics:
+            date, format = convert_date(f'{now.year}-{now.month}', periodic)
+            if date:
+                result_task, created = ResultTask.objects.update_or_create(
+                    date=now, periodicity=format, status=418,
+                    full_name=f'{get_name_task_to_db(format)} выгрузка показателей.',
+                )
         raise ex
     except DoesNotConnectRedis as ex:
         # TODO: 'detail': 'Не могу подключиться к redis. Сообщите администратору системы или в отдел сопровождения СПО'

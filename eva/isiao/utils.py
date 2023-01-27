@@ -130,3 +130,23 @@ def generate_data(time: str = None, periodic: str = 'day') -> dict:
 
     except (SyntaxError, ConnectionError):
         raise
+
+
+def get_name_task_to_db(periodicity: str) -> str:
+    """
+    Функция для конвертации периодичности из кодового формата в человеческий формат в родительском падеже для модели БД.
+
+    :param periodicity: Периодичность в формате строк в виде day/week/month/quarter/half_year/year.
+    Возвращает строку в человеческом формате в родительном падеже.
+    """
+
+    name_tasks = {
+        'day': 'Ежедневная',
+        'week': 'Еженедельная',
+        'month': 'Ежемесячная',
+        'quarter': 'Ежеквартальная',
+        'half_year': 'Полугодовая',
+        'year': 'Ежегодная',
+    }
+
+    return name_tasks[periodicity]
