@@ -1,6 +1,6 @@
-from psycopg2.errors import SyntaxError as SQLSyntaxError
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, JsonResponse
+from psycopg2.errors import SyntaxError as SQLSyntaxError
 from redis.exceptions import ConnectionError as DoesNotConnectRedis
 from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
