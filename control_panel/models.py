@@ -15,6 +15,11 @@ class PanelTool(Tools):
 
 class ResultTask(models.Model):
 
+    class Colors(models.TextChoices):
+        red = 'red', 'Красный'
+        yellow = 'yellow', 'Желтый'
+        green = 'green', 'Зеленый'
+
     class Periodic(models.TextChoices):
         day = 'day', 'день'
         week = 'week', 'неделя'
@@ -33,9 +38,12 @@ class ResultTask(models.Model):
         choices=Periodic.choices,
         default=Periodic.day,
     )
-    status = models.PositiveIntegerField(
+    color = models.CharField(
         verbose_name='Статус выполнения',
-        help_text='Введите статус выполнения согласно HTTP STATUS_CODE',
+        help_text='Выберите статус выполнения',
+        max_length=7,
+        choices=Colors.choices,
+        default=Colors.green,
     )
     full_name = models.CharField(
         verbose_name='Название задачи',
