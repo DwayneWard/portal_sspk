@@ -62,12 +62,12 @@ class GIS(models.Model):
 class Indicator(models.Model):
 
     choices = (
-        ('day', 'день'),
-        ('week', 'неделя'),
-        ('month', 'месяц'),
-        ('quarter', 'квартал'),
-        ('half-year', 'полгода'),
-        ('year', 'год'),
+        ('day', 'День'),
+        ('week', 'Неделя'),
+        ('month', 'Месяц'),
+        ('quarter', 'Квартал'),
+        ('half-year', 'Полгода'),
+        ('year', 'Год'),
     )
     full_name = models.TextField(
         verbose_name='Полное наименование показателя',

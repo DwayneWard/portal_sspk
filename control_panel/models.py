@@ -4,7 +4,6 @@ from portal.models import Tools
 
 
 class PanelTool(Tools):
-
     class Meta:
         verbose_name = 'Система контроля отправки ИС ИАО'
         verbose_name_plural = 'Системы контроля отправки ИС ИАО'
@@ -13,15 +12,14 @@ class PanelTool(Tools):
         return self.full_name
 
 
-class ResultTask(models.Model):
-
+class TaskResult(models.Model):
     class Periodic(models.TextChoices):
-        day = 'day', 'день'
-        week = 'week', 'неделя'
-        month = 'month', 'месяц'
-        quarter = 'quarter', 'квартал'
-        half_year = 'half-year', 'полгода'
-        year = 'year', 'год'
+        day = 'day', 'День'
+        week = 'week', 'Неделя'
+        month = 'month', 'Месяц'
+        quarter = 'quarter', 'Квартал'
+        half_year = 'half-year', 'Полгода'
+        year = 'year', 'Год'
 
     date = models.DateField(
         verbose_name='Дата выполнения задачи',
@@ -41,6 +39,7 @@ class ResultTask(models.Model):
         verbose_name='Название задачи',
         max_length=255
     )
+    # TODO: подумать, может это поле не надо
     body = models.TextField(
         verbose_name='Данные из автоматической отправки данных',
         help_text='Данные из задачи. В случае удачи requestId и datasets, иначе response.text'
