@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import include, path
-from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
+from drf_spectacular.views import (SpectacularAPIView, SpectacularRedocView,
+                                   SpectacularSwaggerView)
 
 from portal import views
 
@@ -9,7 +10,7 @@ urlpatterns = [
 
     path('apps/', views.ToolsForCurrentUser.as_view()),
     path('eva/', include('eva.urls')),
-    path('auth/', include('authority.urls')),
+    # path('auth/', include('authority.urls')),
     path('control_panel/', include('control_panel.urls')),
 ]
 
