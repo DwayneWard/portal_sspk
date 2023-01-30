@@ -1,7 +1,7 @@
-from rest_framework.generics import CreateAPIView, ListAPIView
+from rest_framework.generics import ListAPIView
 
 from authority.models import User
-from authority.serializers import UserCreateSerializer, UsersSerializer
+from authority.serializers import UsersSerializer
 
 
 class UsersView(ListAPIView):
