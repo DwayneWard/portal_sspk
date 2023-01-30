@@ -1,5 +1,6 @@
+from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
-
+from rest_framework.exceptions import ValidationError
 from authority.models import User
 from portal.models import Tools
 from portal.serializers import ToolsSerializer
@@ -10,28 +11,37 @@ class UsersSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        exclude = ('is_staff', 'groups', 'user_permissions')
+        fields = '__all__'
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, validators=[validate_password])
+
     tools = serializers.SlugRelatedField(
         required=False,
         many=True,
         queryset=Tools.objects.all(),
-        slug_field='tool',
+        slug_field='tools',
     )
 
     class Meta:
         model = User
-        fields = '__all__'
+        fields = (
+            "id",
+            "username",
+            "first_name",
+            "last_name",
+            "password",
+            'tools',
+        )
 
     def create(self, validated_data):
-        user = User.objects.create(**validated_data)
+        user = User.objects.create_user(**validated_data)
         user.save()
         return user
 
 
-class UserDeleteSerializer(serializers.ModelSerializer):
+class UserChangeSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = '__all__'
+        exclude = ('password', 'last_login',)

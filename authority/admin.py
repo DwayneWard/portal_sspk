@@ -16,8 +16,6 @@ class UserCreationForm(forms.ModelForm):
         model = User
         fields = (
             'username',
-            'is_superuser',
-            'is_staff',
             'last_name',
             'first_name',
             'patronymic',
@@ -51,13 +49,13 @@ class UserAdmin(BaseUserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on authority.User.
-    list_display = ('username', 'is_staff', 'last_name', 'first_name',)
-    list_filter = ('is_superuser', 'last_name',)
+    list_display = ('username', 'last_name', 'first_name',)
+    list_filter = ('last_name',)
     fieldsets = (
         (None, {'fields': (
             'username', 'password', 'last_name', 'first_name', 'patronymic', 'email', 'phone_number', 'groups',
-            'tools',)}),
-        ('Права доступа', {'fields': ('is_superuser', 'is_staff', 'is_active', 'user_permissions')}),
+            'role', 'tools',)}),
+        ('Права доступа', {'fields': ('is_active', 'user_permissions')}),
     )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
     # overrides get_fieldsets to use this attribute when creating a user.
@@ -66,8 +64,8 @@ class UserAdmin(BaseUserAdmin):
             'classes': ('wide',),
             'fields': (
                 'username', 'password', 'confirm_password', 'last_name', 'first_name', 'patronymic',
-                'email', 'phone_number', 'groups', 'tools',)}),
-        ('Права доступа', {'fields': ('is_superuser', 'is_staff', 'is_active', 'user_permissions')}),
+                'email', 'phone_number', 'role', 'tools',)}),
+        ('Права доступа', {'fields': ('is_active', 'user_permissions')}),
     )
     search_fields = ('username', 'email', 'last_name')
     ordering = ('id', 'username')

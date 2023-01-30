@@ -4,7 +4,6 @@ from psycopg2.errors import SyntaxError as SQLSyntaxError
 from redis.exceptions import ConnectionError as DoesNotConnectRedis
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.views import APIView
 
 from eva.reports.models import Reports
 from eva.reports.serializers import ReportsSerializer
@@ -15,8 +14,10 @@ from eva.reports.utils import (convert_data_to_docs_format,
 
 
 class DownloadFilesView(GenericAPIView):
+    queryset = Reports.objects.all()
+    serializer_class = ReportsSerializer
 
-    def get(requests, report_serial_number: str, file_extension: str):
+    def get(self, request, report_serial_number: str, file_extension: str):
         report = Reports.objects.get(serial_number=float(report_serial_number))
         response = HttpResponse(
             content_type=generate_content_type_for_download(type_of_header=file_extension),
@@ -30,7 +31,10 @@ class DownloadFilesView(GenericAPIView):
             return JsonResponse({'detail': 'Необходимо повторно сгенерировать отчет'}, status=404)
 
 
-class GenerateReportView(APIView):
+class GenerateReportView(GenericAPIView):
+    queryset = Reports.objects.all()
+    serializer_class = ReportsSerializer
+
     def get(self, request, report_serial_number: str):
         try:
             report = Reports.objects.get(serial_number=float(report_serial_number))
@@ -48,7 +52,10 @@ class GenerateReportView(APIView):
                                 status=404)
 
 
-class ReportAtJsonFormatView(APIView):
+class ReportAtJsonFormatView(GenericAPIView):
+    queryset = Reports.objects.all()
+    serializer_class = ReportsSerializer
+
     def get(self, request, report_serial_number: str):
         try:
             return JsonResponse(get_data_from_redis(report_serial_number), status=200)
@@ -57,7 +64,9 @@ class ReportAtJsonFormatView(APIView):
 
 
 class CategoriesWithReportsView(GenericAPIView):
+    queryset = Reports.objects.all()
     permission_classes = [IsAuthenticated, ]
+    serializer_class = ReportsSerializer
 
     def get(self, request, *args, **kwargs):
         current_user = request.user
