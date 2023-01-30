@@ -16,3 +16,9 @@ class ReportsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reports
         fields = ('serial_number', 'name')
+
+
+class ReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Reports
+        fields = '__all__'

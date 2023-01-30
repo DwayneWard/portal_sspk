@@ -1,10 +1,11 @@
-from django.http import HttpResponse, JsonResponse
 from rest_framework import status
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView, UpdateAPIView
+from rest_framework.generics import (CreateAPIView, ListAPIView,
+                                     RetrieveUpdateDestroyAPIView)
 from rest_framework.response import Response
 
 from authority.models import User
-from authority.serializers import UserCreateSerializer, UsersSerializer, UserChangeSerializer
+from authority.serializers import (UserChangeSerializer, UserCreateSerializer,
+                                   UsersSerializer)
 
 
 class UsersView(ListAPIView):
@@ -27,4 +28,3 @@ class UserUpdateView(RetrieveUpdateDestroyAPIView):
         instance.save()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
-

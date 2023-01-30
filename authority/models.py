@@ -1,5 +1,5 @@
 from django.contrib.auth.base_user import AbstractBaseUser
-from django.contrib.auth.models import AbstractUser, Permission, PermissionsMixin
+from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 
