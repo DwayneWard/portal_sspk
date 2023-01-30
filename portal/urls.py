@@ -10,7 +10,7 @@ urlpatterns = [
 
     path('apps/', views.ToolsForCurrentUser.as_view()),
     path('eva/', include('eva.urls')),
-    # path('auth/', include('authority.urls')),
+    path('auth/', include('authority.urls')),
     path('control_panel/', include('control_panel.urls')),
 ]
 

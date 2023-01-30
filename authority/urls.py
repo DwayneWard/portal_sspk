@@ -6,6 +6,8 @@ from authority import views
 
 urlpatterns = [
     path('users/', views.UsersView.as_view()),
+    path('create/', views.UserCreateView.as_view()),
+    path('<int:pk>/', views.UserUpdateView.as_view()),
     path('login/', TokenObtainPairView.as_view()),
     path('refresh/', TokenRefreshView.as_view()),
 ]
