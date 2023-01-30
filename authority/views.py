@@ -25,6 +25,5 @@ class UserUpdateView(RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
         instance.is_active = False
         instance.save()
-
         return Response(status=status.HTTP_204_NO_CONTENT)
 

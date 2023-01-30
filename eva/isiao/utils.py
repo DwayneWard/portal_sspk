@@ -1,7 +1,9 @@
+import datetime
+
 from redis import ConnectionPool, StrictRedis
 
 from eva.isiao.models import GIS, Indicator
-from eva.utils import get_cursor_from_zammad_db, get_date
+from eva.utils import get_cursor_from_zammad_db
 from portal.settings import (CELERY_BROKER_URL, ZAMMAD_DB_HOST, ZAMMAD_DB_NAME,
                              ZAMMAD_DB_PASSWORD, ZAMMAD_DB_PORT,
                              ZAMMAD_DB_USER)
@@ -17,15 +19,16 @@ def get_connect_with_redis():
     return redis
 
 
-def convert_date(date: str = None, format: str = 'month') -> tuple:
+def convert_date(date: datetime = None, format: str = 'day') -> tuple:
     """
-    Функция для конвертации даты в формат необходимый для ИС ИАО. Возвращает кортеж из даты в нужном формате и формат.
+    Функция для конвертации даты в формат необходимый для ИС ИАО. Возвращает кортеж из даты в нужном формате, формат и
+    исходную дату.
 
     :param date: Дата полученная из функции get_date(month=True) в формате строки.
-    :param format: Задает необходимый формат для возврата. Возможные значения: month (значение по умолчанию), quarter,
-    half_year и year.
-    :return: Возвращает кортеж из даты в нужном формате и формат, если дата соотвествовала формату,
-    иначе (None, format).
+    :param format: Задает необходимый формат для возврата. Возможные значения: day (значение по умолчанию), week,
+    month, quarter, half_year и year.
+    :return: Возвращает кортеж из даты в нужном формате, формат и исходную дату, если дата соотвествовала формату,
+    иначе (None, format, date).
     Возвращенный кортеж используется в generate_data.
     """
 
@@ -43,21 +46,24 @@ def convert_date(date: str = None, format: str = 'month') -> tuple:
         'year': '01'
     }
 
-    year, month = date.split('-')
     if format == 'quarter' and date:
         for quarter in dates['quarters']:
-            if month == quarter:
-                return (year + dates['quarters'][quarter], format)
+            if date.month == quarter:
+                return (date.year + dates['quarters'][quarter], format, date)
     if format == 'half_year' and date:
         for half_year in dates['half_years']:
-            if month == half_year:
-                return (year + dates['half_years'][half_year], format)
+            if date.month == half_year:
+                return (date.year + dates['half_years'][half_year], format, date)
     if format == 'year' and date:
-        if month == dates['year']:
-            return (year, format)
+        if date.month == dates['year']:
+            return (date.year, format, date)
     if format == 'month' and date:
-        return (f'{year}-{month}', format)
-    return (None, format)
+        return (f'{date.year}-{date.month}', format, date)
+    if format == 'week' and date:
+        return (f'{date.year}-W{date.isocalendar()}', format, date)
+    if format == 'day' and date:
+        return (f'{date.year}-{date.month}-{date.day}', format, date)
+    return (None, format, date)
 
 
 def forming_data_by_gis_for_iac(zammad_systemcode: int, date: str, indicator: Indicator) -> int:
@@ -89,7 +95,7 @@ def forming_data_by_gis_for_iac(zammad_systemcode: int, date: str, indicator: In
         raise ConnectionError('При подключении к БД Zammad возникла ошибка.')
 
 
-def generate_data(time: str = None, periodic: str = 'day') -> dict:
+def generate_data(time: str = None, periodic: str = 'day', date: datetime = None) -> dict:
     """
     Функция для генерации данных для отправки в ИС ИАО. Возвращает словарь.
 
@@ -98,6 +104,8 @@ def generate_data(time: str = None, periodic: str = 'day') -> dict:
     она может быть день/неделя/месяц/квартал/полугодие/год.
     :param periodic: Параматер совпадает с time, но используется для фильтрации показателей,
     которые необходимо отправить в текущую дату. Возможные значения: day/week/month/quarter/half_year/year.
+    :param date: Дата необходимая для получения данных по ГИСу на основе Показателя ИС ИАО
+    (функция forming_data_by_gis_for_iac)
     :return: Возвращает словарь с данными готовыми для отправки в ИС ИАО, в случае SyntaxError/ConnectionError: raise
     """
 
@@ -120,7 +128,7 @@ def generate_data(time: str = None, periodic: str = 'day') -> dict:
                 }
                 for system in systems:
                     data = forming_data_by_gis_for_iac(zammad_systemcode=system.zammad_systemcode,
-                                                       date=get_date(),
+                                                       date=date.strftime("%Y-%m-%d"),
                                                        indicator=indicator)
                     dataset['series'].append(system.generate_series(value=data, times=time))
                 datasets.append(dataset)
