@@ -54,7 +54,7 @@ class TaskResult(models.Model):
     )
 
     def __str__(self):
-        return f'{self.date} - {self.periodicity} - {self.status}'
+        return f'{self.date} - {self.periodicity} - {self.color}'
 
     class Meta:
         verbose_name = 'Результат выполнения отправки данных в ИС ИАО'
