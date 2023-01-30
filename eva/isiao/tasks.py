@@ -15,6 +15,11 @@ from .celery import app
 
 @app.task
 def check_status_task():
+    """
+    Автоматическая таска, которая каждый день в полночь будет удалять данные из БД в таблице
+    'Результат выполнения отправки данных в ИС ИАО' старше 14 дней и записывать удаленые значения в redis (на время
+    тестирования).
+    """
     try:
         redis = get_connect_with_redis()
 
@@ -36,6 +41,12 @@ def check_status_task():
 
 @app.task(bind=True, autoretry_for=(SyntaxError, ConnectionError, KeyError), max_retries=5, countdown=30*60)
 def send_data_to_ias_everyday(self):
+    """
+    Автоматическая таска, которая каждый день в 2 часа ночи будет собирать данные для ИС ИАО согласно требуемой
+    периодичности и отправлять их. Записывает результат выполнения в Redis и таблицу в БД
+    'Результат выполнения отправки данных в ИС ИАО'. В случае выброса ошибки будет повторять задачу 5 раз с
+    периодичностью в 30 минут.
+    """
     try:
         redis = get_connect_with_redis()
 
@@ -81,6 +92,12 @@ def send_data_to_ias_everyday(self):
 
 @app.task(bind=True, autoretry_for=(SyntaxError, ConnectionError, KeyError), max_retries=5, countdown=30*60)
 def send_data_to_ias_everyweek(self):
+    """
+    Автоматическая таска, которая каждый понедельник в 3 часа ночи будет собирать данные для ИС ИАО согласно требуемой
+    периодичности и отправлять их. Записывает результат выполнения в Redis и таблицу в БД
+    'Результат выполнения отправки данных в ИС ИАО'. В случае выброса ошибки будет повторять задачу 5 раз с
+    периодичностью в 30 минут.
+    """
     try:
         redis = get_connect_with_redis()
 
@@ -127,6 +144,13 @@ def send_data_to_ias_everyweek(self):
 
 @app.task(bind=True, autoretry_for=(SyntaxError, ConnectionError, KeyError), max_retries=5, countdown=30*60)
 def send_data_to_ias_periodic(self):
+    """
+    Автоматическая таска, которая каждый первые день месяца будет собирать данные для ИС ИАО согласно требуемой
+    периодичности и отправлять их. Записывает результат выполнения в Redis и таблицу в БД
+    'Результат выполнения отправки данных в ИС ИАО'. В случае выброса ошибки будет повторять задачу 5 раз с
+    периодичностью в 30 минут.
+    Таска отрабатывает для периодичностей: месяц, квартал, полугодие и год.
+    """
     try:
         redis = get_connect_with_redis()
 

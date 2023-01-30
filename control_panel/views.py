@@ -8,4 +8,3 @@ from control_panel.serializers import TaskResultSerializer
 class TasksResultsView(ListAPIView):
     queryset = TaskResult.objects.all()
     serializer_class = TaskResultSerializer
-

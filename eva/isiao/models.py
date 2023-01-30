@@ -33,7 +33,16 @@ class GIS(models.Model):
         verbose_name = 'ГИС'
         verbose_name_plural = 'ГИСЫ'
 
-    def generate_series(self, value: int, times: str):
+    def generate_series(self, value: int, times: str) -> dict:
+        """
+        Метод модели для генерации серии в структуре необходимой для передачи в ИС ИАО.
+
+
+        :param value: Численный показатель по данному ГИСу по показателю ИС ИАО (Indicator) на основе zammad_queryset.
+        :param times: Показатель времени за какой промежуток генерируется серия день/неделя/месяц/квартал/полугодие/год.
+        :return: Возвращает серию в формате словаря, которая будет использоваться в формировании dataset'а в
+        generate_data.
+        """
         series = {
             "dimensions": [
                 {
