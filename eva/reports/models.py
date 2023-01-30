@@ -29,6 +29,7 @@ class Reports(models.Model):
     )
     serial_number = models.FloatField(
         verbose_name='Порядковый номер отчета',
+        primary_key=True,
     )
     zammad_queryset = models.TextField(
         verbose_name='SQL запрос к Zammad БД'
