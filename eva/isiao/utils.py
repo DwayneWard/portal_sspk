@@ -24,8 +24,8 @@ def convert_date(date: str = None, format: str = 'month') -> tuple:
     :param date: Дата полученная из функции get_date(month=True) в формате строки.
     :param format: Задает необходимый формат для возврата. Возможные значения: month (значение по умолчанию), quarter,
     half_year и year.
-    :return: Возвращает кортеж из даты в нужном формате и формат, если была, если дата соотвествовала формату, иначе
-    (None, format).
+    :return: Возвращает кортеж из даты в нужном формате и формат, если дата соотвествовала формату,
+    иначе (None, format).
     Возвращенный кортеж используется в generate_data.
     """
 
@@ -60,7 +60,7 @@ def convert_date(date: str = None, format: str = 'month') -> tuple:
     return (None, format)
 
 
-def forming_data_by_gis_for_iac(zammad_systemcode, date, indicator: Indicator):
+def forming_data_by_gis_for_iac(zammad_systemcode: int, date: str, indicator: Indicator) -> int:
     """
     Получает данные по требуемому ГИСу на основе Показателя ИС ИАО.
 
