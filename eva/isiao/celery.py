@@ -11,6 +11,9 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 
 app.autodiscover_tasks()
 
+app.conf.task_serializer = 'pickle'
+app.conf.accept_content = ['application/json', 'application/x-python-serialize']
+
 app.conf.beat_schedule = {
     'check_status_task': {
         'task': 'eva.isiao.tasks.check_status_task',
