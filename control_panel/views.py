@@ -19,7 +19,8 @@ class ResendTaskResultView(ListAPIView):
         queryset = TaskResult.objects.filter(color__in=('red', 'yellow'))
         for task in queryset:
             if task.periodicity == 'day':
-                send_data_to_ias_everyday.apply_async(args=[task.date, ])
+                date = task.date
+                send_data_to_ias_everyday.apply_async(args=[date, ])
             elif task.periodicity == 'week':
                 send_data_to_ias_everyweek.apply_async(args=[task.date, ])
             else:

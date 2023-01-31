@@ -2,11 +2,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, JsonResponse
 from redis.exceptions import ConnectionError as DoesNotConnectRedis
 from rest_framework.generics import (CreateAPIView, GenericAPIView,
-                                     RetrieveUpdateDestroyAPIView)
+                                     RetrieveUpdateDestroyAPIView, ListAPIView)
 from rest_framework.permissions import IsAuthenticated
 
-from eva.reports.models import Reports
-from eva.reports.serializers import ReportSerializer, ReportsSerializer
+from eva.reports.models import Reports, Category
+from eva.reports.serializers import ReportSerializer, ReportsSerializer, CategorySerializer
 from eva.reports.utils import (convert_data_to_docs_format,
                                create_report_key_in_redis_db,
                                generate_content_type_for_download,
@@ -84,3 +84,18 @@ class ReportView(RetrieveUpdateDestroyAPIView):
         except SyntaxError:
             return JsonResponse({'detail': 'Ошибка в запросе на получение отчета. Обратитесь к администратору.'},
                                 status=404)
+
+
+class CategoriesListView(ListAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+
+class CategoryCreateView(CreateAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+
+class CategoryView(RetrieveUpdateDestroyAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer

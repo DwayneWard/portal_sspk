@@ -52,7 +52,7 @@ def send_data_to_ias_everyday(self, date: datetime.date = None):
 
         if date:
             time = get_date(date=date)
-            now = date.strftime('%Y-%m-%d')
+            now = time.strftime('%Y-%m-%d')
         else:
             time = get_date()
             now = datetime.date.today().strftime('%Y-%m-%d')
@@ -117,7 +117,7 @@ def send_data_to_ias_everyweek(self, date: datetime = None):
 
         if date:
             time = get_date(date=date)
-            now = date.strftime('%Y-%m-%d')
+            now = time.strftime('%Y-%m-%d')
         else:
             time = get_date()
             now = datetime.date.today().strftime('%Y-%m-%d')

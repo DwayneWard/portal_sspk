@@ -46,4 +46,8 @@ def get_date(date: datetime.date = None) -> datetime:
     if not date:
         return datetime.date.today() - datetime.timedelta(days=1)
     else:
+        print(date)
+        print(type(date))
+        date = datetime.date.fromisoformat(date.split('T')[0])
+        print(type(date))
         return date - datetime.timedelta(days=1)

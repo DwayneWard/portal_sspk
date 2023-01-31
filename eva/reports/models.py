@@ -11,6 +11,7 @@ class Category(models.Model):
     )
     serial_number = models.PositiveIntegerField(
         verbose_name='Порядковый номер категории',
+        primary_key=True,
     )
 
     def __str__(self):
