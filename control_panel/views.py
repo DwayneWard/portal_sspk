@@ -1,5 +1,4 @@
-from django.http import JsonResponse
-from rest_framework.decorators import api_view
+from rest_framework import response
 from rest_framework.generics import ListAPIView
 
 from control_panel.models import TaskResult
@@ -14,11 +13,11 @@ class TasksResultsView(ListAPIView):
     serializer_class = TaskResultSerializer
 
 
-@api_view(['GET', ])
-def resend_tasks(request):
-    if request.method == 'GET':
-        bad_tasks = TaskResult.objects.filter(color__in=('red', 'yellow'))
-        for task in bad_tasks:
+class ResendTaskResultView(ListAPIView):
+
+    def get(self, request, *args, **kwargs):
+        queryset = TaskResult.objects.filter(color__in=('red', 'yellow'))
+        for task in queryset:
             if task.periodicity == 'day':
                 date = task.date
                 send_data_to_ias_everyday.apply_async(args=[date, ])
@@ -26,4 +25,5 @@ def resend_tasks(request):
                 send_data_to_ias_everyweek.apply_async(args=[task.date, ])
             else:
                 send_data_to_ias_periodic.apply_async(args=[task.date, ])
-        return JsonResponse({'detail': 'Неудачно выполненные задачи успешно переотправлены'})
+        serializer = TaskResultSerializer(queryset, many=True)
+        return response.Response(serializer.data)
