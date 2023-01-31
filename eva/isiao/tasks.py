@@ -40,7 +40,7 @@ def check_status_task():
 
 
 @app.task(bind=True, autoretry_for=(SyntaxError, ConnectionError, KeyError), max_retries=5, countdown=30 * 60)
-def send_data_to_ias_everyday(self, date: datetime = None):
+def send_data_to_ias_everyday(self, date: datetime.date = None):
     """
     Автоматическая таска, которая каждый день в 2 часа ночи будет собирать данные для ИС ИАО согласно требуемой
     периодичности и отправлять их. Записывает результат выполнения в Redis и таблицу в БД
@@ -71,22 +71,31 @@ def send_data_to_ias_everyday(self, date: datetime = None):
                                                      'datasets': data_for_ias['body']['datasets']}))
             redis.expire(f'{now}_everyday', 259200)
             result_task, created = TaskResult.objects.update_or_create(
-                date=now, periodicity='day', color='green',
-                full_name=f'{get_name_task_to_db("day")} выгрузка показателей.', body=data_for_ias['body']['datasets']
+                date=now, periodicity='day', full_name=f'{get_name_task_to_db("day")} выгрузка показателей',
+                defaults={
+                    'color': 'green',
+                    'body': data_for_ias['body']['datasets']
+                },
             )
         else:
             redis.set(f'{now}_everyday', json.dumps({'task_id': self.request.id,
                                                      'status': response.status_code}))
             redis.expire(f'{now}_everyday', 259200)
             result_task, created = TaskResult.objects.update_or_create(
-                date=now, periodicity='day', color='yellow',
-                full_name=f'{get_name_task_to_db("day")} выгрузка показателей.', body=data_for_ias['body']['datasets']
+                date=now, periodicity='day', full_name=f'{get_name_task_to_db("day")} выгрузка показателей',
+                defaults={
+                    'color': 'yellow',
+                    'body': data_for_ias['body']['datasets']
+                },
             )
     except (SyntaxError, ConnectionError, KeyError) as ex:
         now = datetime.date.today().strftime('%Y-%m-%d')
         result_task, created = TaskResult.objects.update_or_create(
-            date=now, periodicity='day', color='red', full_name=f'{get_name_task_to_db("day")} выгрузка показателей.',
-            body=ex,
+            date=now, periodicity='day', full_name=f'{get_name_task_to_db("day")} выгрузка показателей',
+            defaults={
+                'color': 'red',
+                'body': ex
+            }
         )
         # TODO: Добавить потом отправку сообщений в телегу, что таска не отработала.
         raise ex
@@ -127,22 +136,31 @@ def send_data_to_ias_everyweek(self, date: datetime = None):
                                                  'datasets': data_for_ias['body']['datasets']}))
             redis.expire(f'{now}_week', 259200)
             result_task, created = TaskResult.objects.update_or_create(
-                date=now, periodicity='week', color='green',
-                full_name=f'{get_name_task_to_db("week")} выгрузка показателей.', body=data_for_ias['body']['datasets']
+                date=now, periodicity='week', full_name=f'{get_name_task_to_db("week")} выгрузка показателей',
+                defaults={
+                    'color': 'green',
+                    'body': data_for_ias['body']['datasets']
+                },
             )
         else:
             redis.set(f'{now}_week', json.dumps({'task_id': self.request.id,
                                                  'status': response.status_code}))
             redis.expire(f'{now}_week', 259200)
             result_task, created = TaskResult.objects.update_or_create(
-                date=now, periodicity='week', color='yellow',
-                full_name=f'{get_name_task_to_db("week")} выгрузка показателей.', body=data_for_ias['body']['datasets']
+                date=now, periodicity='week', full_name=f'{get_name_task_to_db("week")} выгрузка показателей',
+                defaults={
+                    'color': 'yellow',
+                    'body': data_for_ias['body']['datasets']
+                },
             )
     except (SyntaxError, ConnectionError, KeyError) as ex:
         now = datetime.date.today().strftime('%Y-%m-%d')
         result_task, created = TaskResult.objects.update_or_create(
-            date=now, periodicity='week', color='red',
-            full_name=f'{get_name_task_to_db("week")} выгрузка показателей.', body=ex,
+            date=now, periodicity='week', full_name=f'{get_name_task_to_db("week")} выгрузка показателей',
+            defaults={
+                'color': 'red',
+                'body': ex
+            }
         )
         # TODO: Добавить потом отправку сообщений в телегу, что таска не отработала.
         raise ex
@@ -186,7 +204,7 @@ def send_data_to_ias_periodic(self, date: datetime = None):
             (data_year, 'year')
         ]
         for data in datas:
-            if data[0]['body']['datasets'] != 0:
+            if len(data[0]['body']['datasets']) != 0:
                 response = requests.post(IAS_URL, headers=headers, data=json.dumps(data[0]))
                 text = json.loads(response.text)
                 if response.status_code == 200:
@@ -195,29 +213,36 @@ def send_data_to_ias_periodic(self, date: datetime = None):
                                                               'datasets': data[0]['body']['datasets']}))
                     redis.expire(f'{now}_{data[1]}', 259200)
                     result_task, created = TaskResult.objects.update_or_create(
-                        date=now, periodicity=data[1], color='green',
-                        full_name=f'{get_name_task_to_db(data[1])} выгрузка показателей.',
-                        body=data[0]['body']['datasets']
+                        date=now, periodicity=data[1], full_name=f'{get_name_task_to_db(data[1])} выгрузка показателей',
+                        defaults={
+                            'color': 'green',
+                            'body': data[0]['body']['datasets']
+                        },
                     )
                 else:
                     redis.set(f'{now}_{data[1]}', json.dumps({'task_id': self.request.id,
                                                               'status': response.status_code}))
                     redis.expire(f'{now}_{data[1]}', 259200)
                     result_task, created = TaskResult.objects.update_or_create(
-                        date=now, periodicity=data[1], color='yellow',
-                        full_name=f'{get_name_task_to_db(data[1])} выгрузка показателей.',
-                        body=data[0]['body']['datasets']
+                        date=now, periodicity=data[1], full_name=f'{get_name_task_to_db(data[1])} выгрузка показателей',
+                        defaults={
+                            'color': 'yellow',
+                            'body': data[0]['body']['datasets']
+                        },
                     )
     except (SyntaxError, ConnectionError, KeyError) as ex:
         # TODO: Добавить потом отправку сообщений в телегу, что таска не отработала.
         now = datetime.date.today()
         periodics = ['month', 'quarter', 'half_year', 'year']
         for periodic in periodics:
-            date, format = convert_date(f'{now.year}-{now.month}', periodic)
+            date, format, now = convert_date(now, periodic)
             if date:
                 result_task, created = TaskResult.objects.update_or_create(
-                    date=now, periodicity=format, color='red',
-                    full_name=f'{get_name_task_to_db(format)} выгрузка показателей.', body=ex,
+                    date=now, periodicity=format, full_name=f'{get_name_task_to_db(format)} выгрузка показателей',
+                    defaults={
+                        'color': 'red',
+                        'body': ex
+                    }
                 )
         raise ex
     except DoesNotConnectRedis as ex:

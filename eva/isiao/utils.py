@@ -19,7 +19,7 @@ def get_connect_with_redis():
     return redis
 
 
-def convert_date(date: datetime = None, format: str = 'day') -> tuple:
+def convert_date(date: datetime.date = None, format: str = 'day') -> tuple:
     """
     Функция для конвертации даты в формат необходимый для ИС ИАО. Возвращает кортеж из даты в нужном формате, формат и
     исходную дату.
@@ -60,7 +60,7 @@ def convert_date(date: datetime = None, format: str = 'day') -> tuple:
     if format == 'month' and date:
         return (f'{date.year}-{date.month}', format, date)
     if format == 'week' and date:
-        return (f'{date.year}-W{date.isocalendar()}', format, date)
+        return (f'{date.year}-W{date.isocalendar().week}', format, date)
     if format == 'day' and date:
         return (f'{date.year}-{date.month}-{date.day}', format, date)
     return (None, format, date)
@@ -95,7 +95,7 @@ def forming_data_by_gis_for_iac(zammad_systemcode: int, date: str, indicator: In
         raise ConnectionError('При подключении к БД Zammad возникла ошибка.')
 
 
-def generate_data(time: str = None, periodic: str = 'day', date: datetime = None) -> dict:
+def generate_data(time: str = None, periodic: str = 'day', date: datetime.date = None) -> dict:
     """
     Функция для генерации данных для отправки в ИС ИАО. Возвращает словарь.
 
