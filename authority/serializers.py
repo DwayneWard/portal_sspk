@@ -11,18 +11,11 @@ class UsersSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = '__all__'
+        exclude = ('password', 'last_login', 'groups', 'user_permissions')
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, validators=[validate_password])
-
-    tools = serializers.SlugRelatedField(
-        required=False,
-        many=True,
-        queryset=Tools.objects.all(),
-        slug_field='tools',
-    )
 
     class Meta:
         model = User
@@ -32,7 +25,6 @@ class UserCreateSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
             "password",
-            'tools',
         )
 
     def create(self, validated_data):
@@ -42,6 +34,13 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
 
 class UserChangeSerializer(serializers.ModelSerializer):
+    tools = serializers.SlugRelatedField(
+        required=False,
+        many=True,
+        queryset=Tools.objects.all(),
+        slug_field='full_name',
+    )
+
     class Meta:
         model = User
         exclude = ('password', 'last_login',)

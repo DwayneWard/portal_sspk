@@ -40,7 +40,7 @@ def check_status_task():
 
 
 @app.task(bind=True, autoretry_for=(SyntaxError, ConnectionError, KeyError), max_retries=5, countdown=30 * 60)
-def send_data_to_ias_everyday(self, date: datetime = None):
+def send_data_to_ias_everyday(self, date: datetime.date = None):
     """
     Автоматическая таска, которая каждый день в 2 часа ночи будет собирать данные для ИС ИАО согласно требуемой
     периодичности и отправлять их. Записывает результат выполнения в Redis и таблицу в БД
@@ -52,7 +52,7 @@ def send_data_to_ias_everyday(self, date: datetime = None):
 
         if date:
             time = get_date(date=date)
-            now = date.strftime('%Y-%m-%d')
+            now = time.strftime('%Y-%m-%d')
         else:
             time = get_date()
             now = datetime.date.today().strftime('%Y-%m-%d')
@@ -108,7 +108,7 @@ def send_data_to_ias_everyweek(self, date: datetime = None):
 
         if date:
             time = get_date(date=date)
-            now = date.strftime('%Y-%m-%d')
+            now = time.strftime('%Y-%m-%d')
         else:
             time = get_date()
             now = datetime.date.today().strftime('%Y-%m-%d')

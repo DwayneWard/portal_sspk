@@ -6,10 +6,7 @@ from eva.reports.models import Category, Reports
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['id',
-                  'serial_number',
-                  'name',
-                  ]
+        fields = ('serial_number', 'name',)
 
 
 class ReportsSerializer(serializers.ModelSerializer):

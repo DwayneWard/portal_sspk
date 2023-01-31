@@ -1,5 +1,6 @@
 from django.urls import include, path
 
 urlpatterns = [
-    path('reports_catalog/', include("eva.reports.urls")),
+    path('', include("eva.reports.urls")),
+    path('isiao/', include("eva.isiao.urls")),
 ]

@@ -33,7 +33,7 @@ def get_cursor_from_zammad_db(db: str, host: str, port: str, user: str, password
             raise ConnectionError
 
 
-def get_date(date: datetime = None) -> datetime:
+def get_date(date: datetime.date = None) -> datetime:
     """
     Функция для получения вчерашней даты относительно сегодня или же переданной даты.
     Используется для задач Celery.
@@ -46,4 +46,8 @@ def get_date(date: datetime = None) -> datetime:
     if not date:
         return datetime.date.today() - datetime.timedelta(days=1)
     else:
+        print(date)
+        print(type(date))
+        date = datetime.date.fromisoformat(date.split('T')[0])
+        print(type(date))
         return date - datetime.timedelta(days=1)
