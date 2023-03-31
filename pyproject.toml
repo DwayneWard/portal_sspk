@@ -2,7 +2,7 @@
 name = "portal-sspk"
 version = "0.1.0"
 description = ""
-authors = ["s.leontev <neonyan15@gmail.com>"]
+authors = ["s.leontev <neonyan15@gmail.com>", "arturkalimullin <noti1996@gmail.com>"]
 readme = "README.md"
 packages = [{ include = "portal_sspk" }]
 
@@ -26,13 +26,16 @@ djangorestframework-simplejwt = "^5.2.2"
 django-rest-polymorphic = "^0.1.10"
 drf-spectacular = "^0.25.1"
 django-environ = "^0.10.0"
+factories = "^1.2.0"
+pytest = "^7.2.2"
+pytest-redis = "^3.0.1"
+pytest-mock = "^3.10.0"
 
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^6.0.0"
 isort = "^5.11.4"
 ipython = "^8.8.0"
-pytest = "^7.2.2"
 pytest-django = "^4.5.2"
 pytest-factoryboy = "^2.5.1"
 pytest-cov = "^4.0.0"

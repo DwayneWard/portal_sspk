@@ -40,22 +40,23 @@ def convert_date(date: datetime.date = None, format: str = 'day') -> tuple:
         },
         'half_years': {
             '07': '-H1',
-            '01': '-H2'
+            '01': '-H2',
         },
         'year': '01'
     }
-
-    if format == 'quarter' and date:
-        for quarter in dates['quarters']:
-            if date.month == quarter:
-                return (date.year + dates['quarters'][quarter], format, date)
-    if format == 'half_year' and date:
-        for half_year in dates['half_years']:
-            if date.month == half_year:
-                return (date.year + dates['half_years'][half_year], format, date)
-    if format == 'year' and date:
-        if date.month == dates['year']:
-            return (date.year, format, date)
+    if format == 'quarter' or format == 'half_year' or format == 'year':
+        date_str = date.isoformat().split('-')
+        if format == 'quarter' and date:
+            for quarter in dates['quarters']:
+                if quarter == date_str[1]:
+                    return (date_str[0] + dates['quarters'][quarter], format, date)
+        if format == 'half_year' and date:
+            for half_year in dates['half_years']:
+                if half_year == date_str[1]:
+                    return (date_str[0] + dates['half_years'][half_year], format, date)
+        if format == 'year' and date:
+            if dates['year'] == date_str[1]:
+                return (date_str[0], format, date)
     if format == 'month' and date:
         return (f'{date.year}-{date.month}', format, date)
     if format == 'week' and date:

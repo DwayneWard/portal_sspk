@@ -3,7 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from redis.exceptions import ConnectionError as DoesNotConnectRedis
 from rest_framework.generics import CreateAPIView, GenericAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
 
-from authority.permisions import IsAdminOrAdminEVA
+from authority.permisions import IsAdminAndAdminEVAorUser, IsAdminOrAdminEVA
 from eva.reports.models import Category, Reports
 from eva.reports.serializers import CategorySerializer, ReportSerializer, ReportsSerializer
 from eva.reports.utils import (convert_data_to_docs_format, create_report_key_in_redis_db,
@@ -68,7 +68,7 @@ class ReportCreateView(CreateAPIView):
 class ReportView(RetrieveUpdateDestroyAPIView):
     queryset = Reports.objects.all()
     serializer_class = ReportSerializer
-    permission_classes = [IsAdminOrAdminEVA,]
+    permission_classes = [IsAdminAndAdminEVAorUser,]
 
     def get(self, request, *args, **kwargs):
         try:
