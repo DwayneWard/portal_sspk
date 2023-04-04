@@ -17,7 +17,7 @@ SECRET_KEY = env('SECRET_KEY')
 
 DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*', ]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'celery',
+    'corsheaders',
 ]
 
 MY_APPS = [
@@ -46,15 +47,26 @@ DOC_APPS = [
 INSTALLED_APPS += MY_APPS
 INSTALLED_APPS += DOC_APPS
 
+CORS_ALLOWED_ORIGINS = ['http://127.0.0.1', 'http://localhost',]
+CORS_ALLOW_ALL_ORIGINS = True
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost',  # for localhost (REACT Default)
+    'http://localhost:3000',  # for localhost (Developlemt)
+    'http://127.0.0.1:3000', # for localhost
+    'http://127.0.0.1',
 ]
 
 ROOT_URLCONF = 'portal.urls'
