@@ -47,8 +47,6 @@ DOC_APPS = [
 INSTALLED_APPS += MY_APPS
 INSTALLED_APPS += DOC_APPS
 
-CORS_ALLOWED_ORIGINS = ['http://127.0.0.1', 'http://localhost',]
-CORS_ALLOW_ALL_ORIGINS = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -60,13 +58,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
-
-CSRF_TRUSTED_ORIGINS = [
-    'http://localhost',  # for localhost (REACT Default)
-    'http://localhost:3000',  # for localhost (Developlemt)
-    'http://127.0.0.1:3000', # for localhost
-    'http://127.0.0.1',
 ]
 
 ROOT_URLCONF = 'portal.urls'
