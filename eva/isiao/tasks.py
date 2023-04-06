@@ -5,8 +5,7 @@ import requests
 from redis.exceptions import ConnectionError as DoesNotConnectRedis
 
 from control_panel.models import TaskResult
-from eva.isiao.utils import (convert_date, generate_data,
-                             get_connect_with_redis, get_name_task_to_db)
+from eva.isiao.utils import convert_date, generate_data, get_connect_with_redis, get_name_task_to_db
 from eva.utils import get_date
 from portal.settings import IAS_TOKEN, IAS_URL
 

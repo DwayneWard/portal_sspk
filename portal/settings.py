@@ -2,14 +2,20 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
-from dotenv import load_dotenv
+import environ
+
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv()
 
-SECRET_KEY = os.getenv('SECRET_KEY')
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-DEBUG = True
+SECRET_KEY = env('SECRET_KEY')
+
+DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = ['*',]
 
@@ -22,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'celery',
+    'corsheaders',
 ]
 
 MY_APPS = [
@@ -40,10 +47,12 @@ DOC_APPS = [
 INSTALLED_APPS += MY_APPS
 INSTALLED_APPS += DOC_APPS
 
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -76,19 +85,19 @@ AUTH_USER_MODEL = 'authority.User'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB'),
-        'USER': os.getenv('POSTGRES_USER'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': os.getenv('DB_HOST', '127.0.0.1'),
-        'PORT': os.getenv('DB_PORT', 5432),
-    }
+        'NAME': env('POSTGRES_DB'),
+        'USER': env('POSTGRES_USER'),
+        'PASSWORD': env('POSTGRES_PASSWORD'),
+        'HOST': env('DB_HOST'),
+        'PORT': env('DB_PORT'),
+    },
 }
 
-ZAMMAD_DB_NAME = os.getenv('ZAMMAD_DB_NAME')
-ZAMMAD_DB_USER = os.getenv('ZAMMAD_DB_USER')
-ZAMMAD_DB_PASSWORD = os.getenv('PASSWORD_ZAMMAD_DB')
-ZAMMAD_DB_HOST = os.getenv('ZAMMAD_DB_HOST')
-ZAMMAD_DB_PORT = os.getenv('ZAMMAD_DB_PORT')
+ZAMMAD_DB_NAME = env('ZAMMAD_DB_NAME')
+ZAMMAD_DB_USER = env('ZAMMAD_DB_USER')
+ZAMMAD_DB_PASSWORD = env('ZAMMAD_DB_PASSWORD')
+ZAMMAD_DB_HOST = env('ZAMMAD_DB_HOST')
+ZAMMAD_DB_PORT = env('ZAMMAD_DB_PORT')
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -125,16 +134,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CELERY_IMPORTS = ['eva.isiao.tasks', ]
 
-CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
-CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
+CELERY_BROKER_URL = env('CELERY_BROKER_URL')
+CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND')
 CELERY_TIMEZONE = 'Europe/Moscow'
 
-IAS_URL = os.getenv('IAS_URL', 'http://127.0.0.1')
-IAS_TOKEN = os.getenv('IAS_TOKEN', '')
+IAS_URL = env('IAS_URL')
+IAS_TOKEN = env('IAS_TOKEN')
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': ['rest_framework_simplejwt.authentication.JWTAuthentication'],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticated',],
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
 }
 
 SIMPLE_JWT = {
