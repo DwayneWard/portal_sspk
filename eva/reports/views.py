@@ -1,16 +1,13 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, JsonResponse
 from redis.exceptions import ConnectionError as DoesNotConnectRedis
-from rest_framework.generics import (CreateAPIView, GenericAPIView,
-                                     RetrieveUpdateDestroyAPIView, ListAPIView)
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import CreateAPIView, GenericAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
 
-from eva.reports.models import Reports, Category
-from eva.reports.serializers import ReportSerializer, ReportsSerializer, CategorySerializer
-from eva.reports.utils import (convert_data_to_docs_format,
-                               create_report_key_in_redis_db,
-                               generate_content_type_for_download,
-                               get_data_from_redis)
+from authority.permisions import IsAdminAndAdminEVAorUser, IsAdminOrAdminEVA
+from eva.reports.models import Category, Reports
+from eva.reports.serializers import CategorySerializer, ReportSerializer, ReportsSerializer
+from eva.reports.utils import (convert_data_to_docs_format, create_report_key_in_redis_db,
+                               generate_content_type_for_download, get_data_from_redis)
 
 
 class DownloadFilesView(GenericAPIView):
@@ -45,7 +42,6 @@ class ReportAtJsonFormatView(GenericAPIView):
 
 class CategoriesWithReportsView(GenericAPIView):
     queryset = Reports.objects.all()
-    permission_classes = [IsAuthenticated, ]
     serializer_class = ReportsSerializer
 
     def get(self, request, *args, **kwargs):
@@ -63,11 +59,16 @@ class CategoriesWithReportsView(GenericAPIView):
 class ReportCreateView(CreateAPIView):
     queryset = Reports.objects.all()
     serializer_class = ReportSerializer
+    permission_classes = [IsAdminOrAdminEVA,]
+
+    def post(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
 
 
 class ReportView(RetrieveUpdateDestroyAPIView):
     queryset = Reports.objects.all()
     serializer_class = ReportSerializer
+    permission_classes = [IsAdminAndAdminEVAorUser,]
 
     def get(self, request, *args, **kwargs):
         try:
@@ -94,8 +95,10 @@ class CategoriesListView(ListAPIView):
 class CategoryCreateView(CreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    permission_classes = [IsAdminOrAdminEVA,]
 
 
 class CategoryView(RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    permission_classes = [IsAdminOrAdminEVA,]

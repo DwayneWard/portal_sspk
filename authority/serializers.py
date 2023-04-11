@@ -1,5 +1,6 @@
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from authority.models import User
 from portal.models import Tools
@@ -44,3 +45,14 @@ class UserChangeSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         exclude = ('password', 'last_login',)
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Add custom claims
+        token['role'] = user.role
+
+        return token

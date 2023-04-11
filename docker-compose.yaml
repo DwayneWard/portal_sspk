@@ -58,3 +58,4 @@ volumes:
   static_value:
   media_value:
   redis_data:
+  
