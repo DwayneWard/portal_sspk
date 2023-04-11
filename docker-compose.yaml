@@ -9,18 +9,13 @@ services:
       bash -c "celery -A eva.isiao worker --beat --loglevel=info"
     volumes:
       - .:/code
-      - ./.env.docker:/app/.env
-    links:
-      - redis
+      - ./.env_docker:/app/.env
     depends_on:
       - backend
-      - redis
   backend:
     build: .
     container_name: 'backend'
     platform: linux/amd64
-    depends_on:
-      - db
     command: >
       bash -c "python manage.py collectstatic --noinput
       && python manage.py makemigrations
@@ -31,31 +26,8 @@ services:
     volumes:
       - static_value:/code/static/
       - media_value:/code/media/
-      - ./.env.docker:/app/.env
-  db:
-    restart: always
-    image: postgres:15.0-alpine
-    container_name: portal_db
-    env_file:
-      - ./.env.docker
-    ports:
-      - '5432:5432'
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-  redis:
-    platform: linux/amd64
-    image: redis/redis-stack:latest
-    container_name: redis
-    expose:
-      - '6379'
-    ports:
-      - '9999:8001'
-    volumes:
-      - redis_data:/data
+      - ./.env_docker:/app/.env
 
 volumes:
-  postgres_data:
   static_value:
   media_value:
-  redis_data:
-  
