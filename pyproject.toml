@@ -26,6 +26,8 @@ xlsxwriter = "^3.0.7"
 djangorestframework-simplejwt = "^5.2.2"
 django-rest-polymorphic = "^0.1.10"
 drf-spectacular = "^0.25.1"
+mypy = "^1.0.0"
+django-cors-headers = "^3.14.0"
 
 
 [tool.poetry.group.dev.dependencies]
