@@ -80,6 +80,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'portal.wsgi.application'
 
+CORS_ORIGIN_ALLOW_ALL = True
+
 AUTH_USER_MODEL = 'authority.User'
 
 DATABASES = {
@@ -158,3 +160,4 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'Портал для сотрудников ССПК. Оптимизирует и автоматизирует рутинные задачи',
     'VERSION': '1.0.0',
 }
+
